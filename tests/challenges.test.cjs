@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict');
+if(!globalThis.crypto)globalThis.crypto=require('node:crypto').webcrypto;
+const D=require('../challenges.js');
+const segment={schemaVersion:1,id:'user-test',custom:true,creator:'Élodie',name:'Le coin du canal 🏃',area:'Paris 19e',start:'Pont A',finish:'Pont B',description:'Suivre la même rive.',km:1,gain:8,pedestrian:90,sidewalk:10,lights:1,lat:48.889,lon:2.378,visibility:'public',ghostId:'olympic'};
+(async()=>{
+  assert.equal(D.validateSegment(segment).name,segment.name);
+  assert.throws(()=>D.validateSegment({...segment,pedestrian:100,sidewalk:20}));
+  assert.throws(()=>D.validateSegment({...segment,km:0}));
+  assert.throws(()=>D.validateSegment({...segment,lat:99}));
+  assert.throws(()=>D.validateSegment({...segment,id:'seine'}));
+  assert.throws(()=>D.validateSegment({...segment,visibility:'secret'}));
+  const win=D.duel(1,160,'olympic');assert.equal(win.outcome,'win');assert.equal(win.targetSeconds,175);assert.equal(win.difference,15);assert.equal(win.gapMeters,86);
+  assert.equal(D.duel(1,200,'olympic').outcome,'lose');
+  assert.equal(D.duel(1,175,'olympic').outcome,'tie');
+  assert.throws(()=>D.duel(1,0,'olympic'));
+  assert.throws(()=>D.duel(1,100,'unknown'));
+  const publicLink=await D.invitation(segment);assert.ok(publicLink.startsWith('p.'));assert.deepEqual(await D.readInvitation(publicLink),D.validateSegment(segment));
+  const privateSegment={...segment,visibility:'private'};
+  const privateLink=await D.invitation(privateSegment,'mot-de-passe-test');assert.ok(privateLink.startsWith('s.'));assert.deepEqual(await D.readInvitation(privateLink,'mot-de-passe-test'),D.validateSegment(privateSegment));
+  assert.ok(!privateLink.includes('mot-de-passe-test'));
+  assert.ok(!privateLink.includes(segment.name));
+  await assert.rejects(()=>D.readInvitation(privateLink,'mauvais-mot-de-passe'),/incorrect|endommagé/);
+  await assert.rejects(()=>D.invitation(privateSegment,'court'),/Mot de passe/);
+  await assert.rejects(()=>D.readInvitation('p.'+'a'.repeat(15000)),/trop long/);
+  await assert.rejects(()=>D.readInvitation('p.not-json'),/illisible|endommagée/);
+  console.log('24 assertions segments, duels et invitations chiffrées : OK');
+})().catch(e=>{console.error(e);process.exitCode=1;});
