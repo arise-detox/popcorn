@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 145" role="img" aria-labelledby="title">
+<title id="title">Popcorn — emblème ailé</title>
+<defs><linearGradient id="gold" x2="0" y2="1"><stop stop-color="#ffe98a"/><stop offset="1" stop-color="#ffcd38"/></linearGradient><linearGradient id="blue" x2="0" y2="1"><stop stop-color="#376cfb"/><stop offset="1" stop-color="#2857f0"/></linearGradient></defs>
+<g fill="#fff" stroke="#a4c1f7" stroke-width="3" stroke-linejoin="round">
+<path d="M137 54C97 46 53 34 14 14C24 48 57 65 94 71L35 55C46 82 77 93 112 95L62 87C77 112 105 119 144 111L166 87Z"/>
+<path d="M323 54C363 46 407 34 446 14C436 48 403 65 366 71L425 55C414 82 383 93 348 95L398 87C383 112 355 119 316 111L294 87Z"/>
+</g>
+<g fill="none" stroke="#d4e3ff" stroke-width="3" stroke-linecap="round"><path d="M31 29Q77 54 126 63M50 68Q94 84 139 82M429 29Q383 54 334 63M410 68Q366 84 321 82"/></g>
+<circle cx="230" cy="57" r="43" fill="url(#blue)" stroke="#142652" stroke-width="3"/><circle cx="230" cy="57" r="36" fill="none" stroke="url(#gold)" stroke-width="8"/>
+<path d="M210 39h40l-5 29h-29z" fill="#ffdf59"/><path d="M221 43l2 21M237 43l-1 21" stroke="#2857f0" stroke-width="4"/>
+<path d="M208 34a10 10 0 0 1 11-10a11 11 0 0 1 21 0a10 10 0 0 1 12 12c-7 8-37 9-44-2z" fill="#fff"/>
+<path d="M121 78Q230 54 339 78l-7 43Q230 132 128 121z" fill="#142652" opacity=".12"/>
+<path d="M113 75Q230 55 347 75l-10 40Q230 127 123 115z" fill="#ef6a56"/>
+<path d="M113 69Q230 51 347 69l-10 41Q230 123 123 110z" fill="url(#blue)" stroke="#142652" stroke-width="3" stroke-linejoin="round"/>
+<text x="229" y="99" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-weight="900" font-style="italic" font-size="45" letter-spacing="-2" fill="#fff" stroke="#142652" stroke-width="1" paint-order="stroke fill">popcorn</text>
+<path d="M349 36l3-8l3 8l8 3l-8 3l-3 8l-3-8l-8-3z" fill="#ffdf59"/><circle cx="109" cy="24" r="4" fill="#ef6a56"/>
+</svg>
