@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "sport": "running",
+  "startedAt": "2026-10-05T08:00:00+02:00",
+  "durationSeconds": 720,
+  "distanceMeters": 2400,
+  "source": "Exemple Popcorn fictif",
+  "demo": true
+}
