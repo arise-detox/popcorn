@@ -1,0 +1,46 @@
+# Vérifications de Popcorn 1.2
+
+Réalisées le 5 octobre 2026. Ce rapport distingue les contrôles effectués des compatibilités prévues.
+
+## Défis 1.2 et reprise après interruption de Codex
+
+- Les fichiers de travail ont été retrouvés après le plantage de Codex. Le serveur d’aperçu a été relancé. Ce contrôle ne diagnostique ni ne répare la cause du plantage de Codex.
+- Tests du cœur : 16 assertions réussies. Tests des défis : 24 assertions réussies, couvrant les limites des segments, victoire/défaite/égalité, encodage public, chiffrement/déchiffrement privé et rejet de mots de passe/liens invalides.
+- Création d’un coin public et d’un coin privé dans l’interface, refus des proportions de voies dépassant 100 %, refus d’un mot de passe trop court. Le public apparaît dans Explorer ; le privé en reste exclu. Persistance après rechargement.
+- Invitations ouvertes sur une seconde origine locale sans les données du créateur : prévisualisation publique, acceptation explicite, invitation privée verrouillée, rejet d’un mot de passe incorrect puis déchiffrement et acceptation avec le mot de passe de test.
+- Duel sur 2,4 km : cible olympique 7:00 ; 6:30 donne une victoire et 171 m d’écart théorique ; 8:00 donne une défaite ; 7:00 donne une égalité. Enregistrement local vérifié. Chronomètre manuel démarré et arrêté avec bilan.
+- Affichage des défis à 390 pixels et du formulaire à 320 pixels : contrôles visuels, absence de débordement horizontal du document.
+- Après le plantage, aucun serveur n’écoutait sur les ports de test : rechargement de Popcorn et duel réussis depuis le cache hors ligne 1.2, avec conservation des deux coins locaux.
+- Aucun avertissement ou erreur JavaScript relevé dans le journal du navigateur lors de la reprise.
+- Le ZIP 1.2 est `Popcorn-PWA-defis.zip`. Le rapport voisin `Popcorn-archive-verification.txt` contient les contrôles d’archive et de téléchargement HTTP local.
+
+Les exemples créés pendant les essais sont dans le stockage du navigateur de test ; ils ne sont pas inclus comme données initiales du ZIP. Les fantômes sont des règles de jeu fictives. Le partage fonctionne par liens, sans annuaire commun ni synchronisation des résultats.
+
+## Mise à jour graphique 1.1
+
+Identité arcade moderne : logo SVG ailé original, anneau jaune, bleu électrique, accents corail, cartes et navigation redessinées, icônes PWA et Apple coordonnées. Le fichier `CHARTE-GRAPHIQUE.md` documente la palette et les usages.
+
+Contrôles complémentaires : affichage du logo et de la nouvelle palette dans le navigateur ; absence de débordement horizontal aux largeurs 320 et 390 pixels ; filtre Difficile toujours fonctionnel (2 segments) ; service worker passé à `v1.1.0` et logo ajouté au shell hors ligne. Serveur arrêté puis page rechargée : logo chargé et 8 segments disponibles avec la nouvelle palette. Nouvelle archive `Popcorn-PWA-arcade.zip`, contrôlée par CRC, extraction, comparaison des fichiers et téléchargement HTTP local.
+
+## Contrôles effectués
+
+- Écriture et lecture de fichiers dans le dossier de livraison : réussies.
+- Tests Node du cœur : 16 assertions réussies (seuils de difficulté, fluidité, distances à vol d’oiseau, temps et rejet d’activités invalides).
+- Syntaxe JavaScript du projet vérifiée.
+- Chargement HTTP de la PWA sous `/popcorn/`, représentant un sous-dossier GitHub Pages : réussi.
+- Affichage dans le navigateur intégré Codex : écrans mobiles de 320 et 390 pixels, et écran de 1280 pixels ; contrôle du débordement horizontal et revue visuelle.
+- Recherche « sceaux » : 1 segment. Facile : 2 segments. Difficile : 2 segments. Filtre voies piétonnes/trottoirs : 7 segments. Rayon 2 km depuis le centre de Paris : 2 segments.
+- Favori ajouté ; ajout d’un temps de 12:34 ; refus d’un temps nul ; résultat et favori présents après rechargement.
+- Import de l’exemple fictif via le bouton et via le fichier JSON : réussi. Confirmation d’association obligatoire. Import refusé si l’écart de distance dépasse 3 %. Le classement conserve un seul meilleur temps local par segment.
+- Service worker activé et shell mis en cache. Serveur local arrêté, absence de réponse réseau confirmée, puis page rechargée : les 8 segments, les détails et les résultats locaux restent utilisables.
+- Aucun message d’erreur JavaScript relevé pendant ces essais dans les journaux du navigateur.
+- Icônes PNG créées aux dimensions du manifeste et de l’icône Apple.
+- Archive ZIP relue intégralement avec contrôle CRC ; présence du README, du manifeste, du service worker, des scripts et des icônes ; extraction et comparaison octet par octet avec les fichiers livrés. Taille et SHA-256 figurent dans le rapport d’archive voisin du ZIP.
+
+## Limites des essais
+
+- Aucun iPhone physique ou navigateur Safari réel testé. Les dimensions mobiles ne remplacent pas un essai sur appareil. Les balises iOS, le manifeste relatif, le service worker, les PNG Apple et les zones de sécurité sont inclus ; l’installation Safari suit le guide Apple cité dans le README.
+- Géolocalisation implémentée via l’API du navigateur avec gestion des succès, refus et délais ; aucune position personnelle réelle demandée pendant ces essais.
+- Le bouton d’export a été déclenché, mais l’outil de téléchargement du navigateur intégré n’a pas confirmé la récupération du fichier Blob. Cette récupération n’est donc pas certifiée par cet essai ; elle utilise le mécanisme standard Blob + lien download. Le téléchargement du ZIP livré est distinct, par fichier local réel.
+- Aucun déploiement sur un compte GitHub effectué ; la compatibilité de chemin a été contrôlée localement sous `/popcorn/`.
+- Aucune montre, aucun fournisseur, aucun classement partagé ou tracé réel connecté. L’application expose ces limites à l’écran.
