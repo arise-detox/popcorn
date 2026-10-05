@@ -28,5 +28,27 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "categories": [
+    "sports",
+    "health",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "Explorer les segments",
+      "short_name": "Explorer",
+      "url": "./#explorer"
+    },
+    {
+      "name": "Lancer un duel fantôme",
+      "short_name": "Défis",
+      "url": "./#challenges"
+    },
+    {
+      "name": "Mon carnet",
+      "short_name": "Carnet",
+      "url": "./#profile"
+    }
   ]
 }

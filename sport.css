@@ -1,0 +1,185 @@
+/* Popcorn — style « Sport » : noir, blanc et gris, titres condensés en capitales, boutons ronds.
+   Inspiré de l'esprit sportif épuré des grandes marques (sans reprendre aucun logo ni élément protégé) ;
+   le bleu électrique et le jaune de Popcorn restent des accents. Chaque règle est préfixée pour n'agir que si <html data-style="sport">.
+   Ce fichier est généré : modifier sport.src.css puis relancer build_sport.py. */
+/* Anton (SIL Open Font License 1.1, voir fonts/ANTON-OFL.txt), embarquée en local : aucune requête externe. */
+@font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;src:url('./fonts/anton-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+html[data-style="sport"]{--ink:#111;--muted:#707072;--paper:#fff;--line:#e5e5e5;--orange:#d33918;--hf:'Anton',Impact,'Haettenschweiler','Arial Narrow Bold',sans-serif;font-family:'Helvetica Neue',Helvetica,Arial,'Segoe UI',sans-serif;color:#111;background:#fff}
+html[data-style="sport"] body{background:#fff}
+html[data-style="sport"] :focus-visible{outline:3px solid #2857f0;outline-offset:3px}
+html[data-style="sport"] .skip{background:#ffdf59}
+
+/* Titres */
+html[data-style="sport"] h1,html[data-style="sport"] .intro h1{font-family:var(--hf);font-weight:400;text-transform:uppercase;letter-spacing:.005em;line-height:.95;font-size:clamp(3.3rem,15vw,5.6rem);margin-bottom:12px}
+html[data-style="sport"] h1 span{color:#2857f0}
+html[data-style="sport"] h2{font-family:var(--hf);font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:1.05;font-size:1.75rem}
+html[data-style="sport"] .eyebrow{font-weight:700;letter-spacing:.14em;color:#707072;font-size:.7rem}
+html[data-style="sport"] .lead,html[data-style="sport"] .intro p:last-child{color:#707072}
+html[data-style="sport"] .map-heading h2,html[data-style="sport"] .results-heading h2{font-size:1.9rem}
+html[data-style="sport"] .results-heading h2{font-size:1.6rem}
+
+/* Bandeaux */
+html[data-style="sport"] .topbar{background:#fff;border-bottom:1px solid #e5e5e5}
+html[data-style="sport"] .top-meta{color:#707072}
+html[data-style="sport"] .demo-pill{background:#fff;border:1px solid #111;color:#111;border-radius:20px;text-transform:uppercase;letter-spacing:.1em;font-size:.68rem}
+html[data-style="sport"] .demo-banner{background:#f5f5f5;color:#111}
+html[data-style="sport"] .demo-banner button{font-weight:700}
+html[data-style="sport"] .race-bar{background:#111}
+html[data-style="sport"] .race-bar-btn{border-radius:30px;background:#fff;color:#111}
+
+/* Bloc d'accueil : grande tuile noire */
+html[data-style="sport"] .intro{background:#111;color:#fff;padding:34px 24px 30px;margin-bottom:6px;position:relative;overflow:hidden}
+html[data-style="sport"] .intro:after{content:'';position:absolute;right:-30px;top:-20px;width:150px;height:300%;background:#ffdf59;transform:skewX(-25deg);opacity:.12;pointer-events:none}
+html[data-style="sport"] .intro>*{position:relative;z-index:1}
+html[data-style="sport"] .intro h1{color:#fff}
+html[data-style="sport"] .intro h1 span{color:#ffdf59}
+html[data-style="sport"] .intro .eyebrow{color:#cfcfcf}
+html[data-style="sport"] .intro p,html[data-style="sport"] .intro p:last-child{color:#d6d6d6}
+html[data-style="sport"] .intro .primary{background:#fff;color:#111}
+html[data-style="sport"] .intro .primary:hover{background:#e5e5e5}
+html[data-style="sport"] .location-status{color:#707072;margin:14px 0 22px}
+
+/* Boutons */
+html[data-style="sport"] .primary{background:#111;color:#fff;border-radius:30px;box-shadow:none;padding:14px 26px;font-weight:700;transition:background .15s,transform .15s}
+html[data-style="sport"] .primary:hover{background:#707072}
+html[data-style="sport"] .primary:active{transform:scale(.97);box-shadow:none}
+html[data-style="sport"] .secondary{background:#fff;color:#111;border:1px solid #ccc;border-radius:30px;font-weight:700}
+html[data-style="sport"] .secondary:hover{background:#fff;border-color:#111}
+html[data-style="sport"] .file-button{background:#111;border-radius:30px;box-shadow:none}
+html[data-style="sport"] .restore-btn{background:#fff;color:#111;border:1px solid #ccc}
+html[data-style="sport"] .surprise{border:1px solid #111;color:#111}
+html[data-style="sport"] .chip{background:#fff;border:1px solid #ccc;color:#111;font-weight:600}
+html[data-style="sport"] .chip.active{background:#111;border-color:#111;box-shadow:none;color:#fff}
+html[data-style="sport"] .fav-chip.active{background:#ffdf59;border-color:#ffdf59;color:#111;box-shadow:none}
+html[data-style="sport"] .search{background:#f5f5f5;border:1px solid #f5f5f5;border-radius:30px;box-shadow:none;padding:6px 18px}
+html[data-style="sport"] .search:focus-within{border-color:#111;background:#fff}
+html[data-style="sport"] select{border:1px solid #ccc;border-radius:20px;color:#111}
+html[data-style="sport"] .toggle input,html[data-style="sport"] .visibility-picker input{accent-color:#111}
+html[data-style="sport"] .close-button{background:#f5f5f5;color:#111}
+html[data-style="sport"] .text-button{font-weight:600}
+
+/* Carte et liste */
+html[data-style="sport"] .map-panel{background:#f5f5f5;border:0;border-radius:0;box-shadow:none}
+html[data-style="sport"] .map-heading h2{color:#111}
+html[data-style="sport"] .map-heading .eyebrow{color:#707072}
+html[data-style="sport"] .count-pill{background:#fff;border:1px solid #e5e5e5;color:#111;font-weight:700}
+html[data-style="sport"] .map-caption{color:#707072;border-top:1px solid #e5e5e5}
+html[data-style="sport"] .map-note{background:#111}
+html[data-style="sport"] .map-note:after{border-color:#ffdf5940}
+html[data-style="sport"] .map-note strong{font-family:var(--hf);font-weight:400;text-transform:uppercase;letter-spacing:.01em;font-size:1.5rem}
+html[data-style="sport"] .map-note p{color:#d6d6d6}
+html[data-style="sport"] .map-wrap pattern path{stroke:#e2e2e2}
+html[data-style="sport"] .map-wrap svg path[stroke="#9bcef7"]{stroke:#d4dbe6}
+html[data-style="sport"] .map-wrap svg path[stroke="#eaf7ff"]{stroke:#fff}
+html[data-style="sport"] .map-wrap svg path[stroke="#b9cced"]{stroke:#cfcfcf}
+html[data-style="sport"] .map-wrap svg ellipse{fill:#fff}
+html[data-style="sport"] .map-wrap svg text[fill="#6981ad"],html[data-style="sport"] .map-wrap svg text[fill="#526f9e"]{fill:#8a8a8c}
+html[data-style="sport"] .map-wrap svg circle[fill="#142652"]{fill:#111}
+html[data-style="sport"] .map-wrap svg circle[stroke="#f3f7ff"]{stroke:#f5f5f5}
+html[data-style="sport"] .segment-card{background:#f5f5f5;border:0;border-radius:0;box-shadow:none}
+html[data-style="sport"] .segment-card:hover{border:0;box-shadow:none;background:#ececec}
+html[data-style="sport"] .card-open:hover{background:transparent}
+html[data-style="sport"] .segment-card h3{font-family:var(--hf);font-weight:400;text-transform:uppercase;font-size:1.45rem;line-height:1.05;letter-spacing:.01em;margin:10px 0 6px}
+html[data-style="sport"] .card-aside{background:#e5e5e5;border-left:0}
+html[data-style="sport"] .mini-route path[stroke="#2857f0"]{stroke:#111}
+html[data-style="sport"] .metrics b{color:#111}
+html[data-style="sport"] .flow b{color:#111}
+html[data-style="sport"] .favorite[aria-pressed=true]{color:#111}
+html[data-style="sport"] .badge{border-radius:20px;text-transform:uppercase;letter-spacing:.07em;font-size:.66rem;padding:5px 10px}
+html[data-style="sport"] .pb-line{background:#ffdf59;color:#111;border-radius:20px;padding:5px 12px}
+html[data-style="sport"] .empty{background:#f5f5f5;border-radius:0}
+html[data-style="sport"] .route-dot{background:#d33918}
+
+/* Navigation basse */
+html[data-style="sport"] .bottom-nav{left:0;transform:none;bottom:0;width:100%;max-width:none;border:0;border-top:1px solid #e5e5e5;border-radius:0;background:#fff;color:#707072;box-shadow:none;padding:6px 8px calc(6px + env(safe-area-inset-bottom));justify-content:center}
+html[data-style="sport"] .bottom-nav a{border-radius:0;max-width:130px;font-weight:600;font-size:.68rem;gap:3px;padding:6px 2px}
+html[data-style="sport"] .bottom-nav span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-size:1.25rem;line-height:1}
+html[data-style="sport"] .bottom-nav .active{background:transparent;color:#111;box-shadow:none;font-weight:800}
+html[data-style="sport"] .bottom-nav a.active span{background:#ffdf59;color:#111}
+html[data-style="sport"] .toast{background:#111;border-radius:16px;bottom:96px}
+
+/* Carnet */
+html[data-style="sport"] .level-card{background:#111;border-radius:0}
+html[data-style="sport"] .level-card:after{border-color:#ffdf5938}
+html[data-style="sport"] .level-head h2{font-size:2.1rem}
+html[data-style="sport"] .level-head .eyebrow{color:#cfcfcf}
+html[data-style="sport"] .level-card .small-note{color:#d6d6d6}
+html[data-style="sport"] .stat{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .stat:nth-child(n){background:#f5f5f5;border-color:transparent}
+html[data-style="sport"] .stat:first-child{background:#ffdf59}
+html[data-style="sport"] .stat:after{display:none}
+html[data-style="sport"] .stat b{font-family:var(--hf);font-weight:400;font-size:2.7rem;letter-spacing:.005em;color:#111;line-height:1.05}
+html[data-style="sport"] .stat span{color:#111}
+html[data-style="sport"] .paper{background:#fff;border:0;border-top:2px solid #111;border-radius:0;box-shadow:none;padding:22px 0 8px}
+html[data-style="sport"] .info-card,html[data-style="sport"] .install-card{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .goal-ring [stroke="#2857f0"]{stroke:#111}
+html[data-style="sport"] .goal-ring [stroke="#e1eaff"]{stroke:#e5e5e5}
+html[data-style="sport"] .badge-card{background:#f5f5f5;border:0;border-radius:0;opacity:1}
+html[data-style="sport"] .badge-card.on{background:#ffdf59;border:0}
+html[data-style="sport"] .badge-card:not(.on) .badge-emoji{opacity:.4}
+html[data-style="sport"] .badge-prog{background:#d9d9d9}
+html[data-style="sport"] .badge-prog i{background:#111}
+html[data-style="sport"] .pb-time strong{color:#111;font-family:var(--hf);font-weight:400;font-size:1.4rem}
+html[data-style="sport"] .simple-list li{border-color:#e5e5e5}
+html[data-style="sport"] .danger{color:#d33918}
+
+/* Records et classements */
+html[data-style="sport"] .leaderboard th{color:#707072}
+html[data-style="sport"] .leaderboard td,html[data-style="sport"] .leaderboard th{border-color:#e5e5e5}
+html[data-style="sport"] .local-row{background:#fff4bf}
+html[data-style="sport"] .watch-card{background:#111;border:0;border-radius:0;box-shadow:none}
+html[data-style="sport"] .watch-card h2{color:#fff}
+html[data-style="sport"] .watch-card small{color:#cfcfcf}
+html[data-style="sport"] .import-preview{background:#f5f5f5;border:0;border-radius:0}
+
+/* Défis et duels */
+html[data-style="sport"] .ghost-arena{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .ghost-card{background:#fff;border:0;border-radius:0}
+html[data-style="sport"] .ghost-card h3{font-family:var(--hf);font-weight:400;text-transform:uppercase;font-size:1.5rem;letter-spacing:.01em}
+html[data-style="sport"] .ghost-avatar,html[data-style="sport"] .ghost-card:nth-child(n) .ghost-avatar{background:#f5f5f5}
+html[data-style="sport"] .ghost-pace{color:#111;font-family:var(--hf);font-weight:400;font-size:2rem}
+html[data-style="sport"] .ghost-target{background:#ffdf59;border-radius:0}
+html[data-style="sport"] .custom-card{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .invitation-card{background:#ffdf59;border:0;border-radius:0}
+html[data-style="sport"] .ghost-hero>span{background:#f5f5f5}
+html[data-style="sport"] .ghost-hero h2{font-size:2rem}
+html[data-style="sport"] .target-clock{background:#111;border-radius:0}
+html[data-style="sport"] .target-clock strong{font-family:var(--hf);font-weight:400;font-size:4.4rem;line-height:1.1;color:#ffdf59}
+html[data-style="sport"] .lane{background:repeating-linear-gradient(90deg,#d9d9d9 0 18px,#f1f1f1 18px 23px)}
+html[data-style="sport"] .lane:after{background:#111}
+html[data-style="sport"] .race-controls>strong{color:#111;font-family:var(--hf);font-weight:400;font-size:2.4rem}
+html[data-style="sport"] .duel-result{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .duel-result.win{background:#ffdf59;border:0}
+html[data-style="sport"] .duel-result h3{font-family:var(--hf);font-weight:400;text-transform:uppercase;font-size:2rem;line-height:1.05}
+html[data-style="sport"] .duel-times>span{background:#fff;border:0;border-radius:0}
+html[data-style="sport"] .duel-times strong{color:#111;font-family:var(--hf);font-weight:400;font-size:1.9rem}
+
+/* Fenêtres et formulaires */
+html[data-style="sport"] dialog{background:#fff;border-radius:0;box-shadow:0 20px 80px #0004}
+html[data-style="sport"] dialog::backdrop{background:#111a}
+html[data-style="sport"] .detail-route,html[data-style="sport"] .elev{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .detail-route path[stroke="#2857f0"]{stroke:#111}
+html[data-style="sport"] .elev [stroke="#2857f0"]{stroke:#111}
+html[data-style="sport"] .elev stop{stop-color:#111}
+html[data-style="sport"] .detail-metrics div{background:#f5f5f5;border:0;border-radius:0}
+html[data-style="sport"] .detail-metrics strong{font-family:var(--hf);font-weight:400;font-size:1.7rem;letter-spacing:.005em}
+html[data-style="sport"] .quality-list li{background:#f5f5f5;border-radius:20px;color:#111}
+html[data-style="sport"] .my-card{background:#f5f5f5;border:0;border-left:6px solid #ffdf59;border-radius:0}
+html[data-style="sport"] .my-card .eyebrow{color:#707072}
+html[data-style="sport"] .my-record strong{color:#111;font-family:var(--hf);font-weight:400;font-size:2.6rem}
+html[data-style="sport"] .pace-details summary{color:#111}
+html[data-style="sport"] .pace-table td{border-color:#e5e5e5}
+html[data-style="sport"] .effort-form{border-color:#e5e5e5}
+html[data-style="sport"] .create-form input:not([type=radio]),html[data-style="sport"] .create-form textarea,html[data-style="sport"] .wide-label input,html[data-style="sport"] .wide-label textarea,html[data-style="sport"] .time-fields input{border:1px solid #ccc;border-radius:12px;background:#fff;color:#111}
+html[data-style="sport"] .visibility-picker{border-color:#ccc;border-radius:12px}
+html[data-style="sport"] .form-error{color:#d33918}
+html[data-style="sport"] .confetti i:nth-child(5n+1){background:#111!important}
+
+@media(max-width:760px){
+html[data-style="sport"] .intro{padding:30px 20px 26px}
+html[data-style="sport"] .intro h1{font-size:clamp(3.3rem,16vw,4.6rem)}
+html[data-style="sport"] .bottom-nav{border-radius:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+html[data-style="sport"] .bottom-nav a{font-size:.66rem}
+html[data-style="sport"] .toast{bottom:92px}
+}
+

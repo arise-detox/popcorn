@@ -13,7 +13,10 @@
     if (typeof input.durationSeconds !== 'number' || !Number.isFinite(input.durationSeconds) || input.durationSeconds < 30 || input.durationSeconds > 86400) throw new Error('La durée doit être comprise entre 30 secondes et 24 heures.');
     if (typeof input.distanceMeters !== 'number' || !Number.isFinite(input.distanceMeters) || input.distanceMeters < 100 || input.distanceMeters > 200000) throw new Error('La distance doit être comprise entre 100 m et 200 km.');
     if (typeof input.startedAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T/.test(input.startedAt) || !Number.isFinite(Date.parse(input.startedAt))) throw new Error('Date startedAt ISO 8601 invalide.');
-    return {schemaVersion:1,sport:'running',durationSeconds:Math.round(input.durationSeconds),distanceMeters:input.distanceMeters,startedAt:input.startedAt,source:typeof input.source === 'string' ? input.source.slice(0,60) : 'Fichier local',demo:input.demo === true};
+    const out = {schemaVersion:1,sport:'running',durationSeconds:Math.round(input.durationSeconds),distanceMeters:input.distanceMeters,startedAt:input.startedAt,source:typeof input.source === 'string' ? input.source.slice(0,60) : 'Fichier local',demo:input.demo === true};
+    const st = input.start;
+    if (st && Number.isFinite(st.lat) && Number.isFinite(st.lon) && Math.abs(st.lat) <= 90 && Math.abs(st.lon) <= 180) out.start = {lat:st.lat,lon:st.lon};
+    return out;
   };
   const api = {difficulty,flow,distance,time,validateActivity};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

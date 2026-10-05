@@ -1,6 +1,6 @@
 # Popcorn 🍿 — PWA de démonstration
 
-Version 1.2 · 5 octobre 2026 · Interface en français · Fichiers statiques sans compilation ni dépendances web externes.
+Version 1.3 · 5 octobre 2026 · Interface en français · Fichiers statiques sans compilation ni dépendances web externes.
 
 **Cette version est un prototype fonctionnel avec données fictives, pas un service de compétition réel.** Les noms de lieux évoquent Paris et ses alentours. Les 8 segments, coordonnées approximatives de départ, distances, dénivelés, tracés, proportions de voies, feux et résultats sont des exemples sans validation terrain. Le schéma géographique et les motifs de tracé ne sont pas des itinéraires de navigation. Les montres ne sont pas connectées.
 
@@ -67,6 +67,12 @@ Référence : [Transformer un site web en app dans Safari sur l’iPhone](https:
 - Favoris et résultats déclaratifs persistants via `localStorage`. Un seul meilleur temps par coureur fictif et un seul meilleur temps pour « Vous » dans chaque classement. Aucun serveur, compte, authentification ou classement partagé.
 - Saisie d’un temps (1 s à 24 h), import JSON normalisé, export des résultats locaux et suppression.
 - PWA : manifeste relatif, icônes PNG 192/512, icône maskable, icône Apple 180, zones de sécurité iPhone, service worker pour le shell et les exemples hors ligne.
+- **Carnet 1.3** : niveau et points (10 par km, 20 par nouveau segment, 15 par duel gagné), objectif hebdomadaire réglable avec anneau de progression, série de jours, allure moyenne, 13 badges, meilleur temps par segment. Tout est calculé localement à partir des résultats déclarés (`progress.js`).
+- **Records** : à l’ajout d’un temps, le message indique « premier temps » ou « nouveau record » avec l’écart ; chaque fiche affiche votre record, une estimation de temps (formule de Riegel, indicative), un tableau « temps selon l’allure » et un **profil altimétrique schématique** (courbe déterministe dont le dénivelé cumulé vaut le dénivelé annoncé, jamais le relief réel).
+- **Chrono persistant** : un duel lancé continue si vous fermez la fenêtre ou si iOS décharge l’app ; une barre « Chrono » en haut permet de reprendre. L’écran reste allumé pendant le chrono quand le navigateur le permet (Wake Lock).
+- Explorer : filtre ★ Favoris, bouton **Surprends-moi** (tirage parmi les segments filtrés), favoris cerclés de jaune et position « Vous » sur le schéma après géolocalisation, record affiché sur les cartes.
+- **Sauvegarde / restauration** complète (résultats, favoris, coins, objectif) depuis Mon carnet ; partage d’un duel par la feuille de partage du téléphone.
+- **Apparence Sport** (seule apparence depuis la 1.3) : noir, blanc et gris, titres condensés en capitales (police Anton), boutons ronds, tuile d’accueil noire ; le bleu électrique et le jaune de Popcorn restent des accents. Elle vit dans `sport.css`, appliquée par `<html data-style="sport">` par-dessus `styles.css` (l’ancienne identité « arcade » 1.1).
 - Interface responsive, commandes tactiles, labels accessibles, dialogs clavier et signalement explicite du mode démo.
 
 ## Estimations et données
@@ -89,7 +95,7 @@ Remplacez les exemples dans `data.js` par des segments vérifiés pour une suite
 
 `watch-adapters.js` expose un contrat `WatchAdapter` avec `connect()`, `listActivities()` et `normalizeActivity()`. Les méthodes de connexion et de récupération lèvent une erreur explicite : aucune connexion n’est simulée comme réelle. L’interface affiche **Non connecté** pour tous les fournisseurs.
 
-`FileImportAdapter` fonctionne localement avec le format JSON ci-dessous. Ce format n’est pas un export natif Apple/Garmin ; un convertisseur sera nécessaire. GPX, FIT et TCX ne sont pas pris en charge. Une activité importée est associée manuellement au segment entier, avec confirmation, et doit être à ± 3 % de sa distance. Cette comparaison ne vérifie pas le tracé ou l’intégrité du temps.
+`FileImportAdapter` fonctionne localement avec les **fichiers GPX** (export de la plupart des montres et applications de course : distance cumulée en ignorant les sauts de signal à plus de 12 m/s, durée entre le premier et le dernier point, 5 Mo maximum) ou avec le format JSON ci-dessous. FIT et TCX ne sont pas pris en charge. Une activité importée est associée manuellement au segment entier, avec confirmation, et doit être à ± 3 % de sa distance. Pour un GPX, l’écart entre le départ de l’activité et le départ du segment est affiché en avertissement. Ces comparaisons ne vérifient ni le tracé ni l’intégrité du temps.
 
 ```json
 {
@@ -110,24 +116,27 @@ Pour une vraie intégration : développer des adaptateurs selon les APIs et cond
 ## Stockage, hors ligne et mises à jour
 
 - Position GPS : utilisée seulement en mémoire pour la proximité ; non stockée et non envoyée par le code. Elle ne figure pas dans les exports.
-- Fichiers importés : traités dans le navigateur ; aucune transmission. Aucun outil analytique ni police/cartographie distante.
+- Fichiers importés : traités dans le navigateur ; aucune transmission. Aucun outil analytique ni police/cartographie distante (la police Anton du style Sport est embarquée dans `fonts/`).
 - Favoris et temps : clé `popcorn-v1` dans `localStorage`. Ils peuvent être effacés par le navigateur, le mode privé ou la suppression de l’app. Le stockage peut différer entre Safari et la PWA installée ; pas de synchronisation entre appareils.
-- La version accepte au maximum 500 résultats locaux. Exportez-les depuis Mon carnet avant d’effacer les données.
-- Le fichier d’export des résultats est un carnet de résultats, pas un fichier d’activité ; il ne peut pas être réimporté par l’import d’activité.
+- La version accepte au maximum 500 résultats locaux. Sauvegardez-les depuis Mon carnet avant d’effacer les données.
+- Le fichier de sauvegarde (`popcorn-sauvegarde.json`) se restaure depuis Mon carnet (« Restaurer une sauvegarde ») ; il remplace les données de l’appareil après confirmation. Il n’est pas un fichier d’activité et ne passe pas par l’import d’activité. Un chrono en cours est conservé sous la clé `popcorn-race-v1`.
 - Le mode hors ligne exige un premier chargement réussi sous HTTPS ou localhost. Les fonctions locales et données démo fonctionnent ensuite sans réseau. La disponibilité GPS dépend du système ; aucune carte en ligne n’est requise. iOS peut vider le cache.
-- Après modification des fichiers, incrémentez la version du cache dans `sw.js` (`v1.2.0` → `v1.2.1`), publiez puis fermez **tous** les onglets/fenêtres Popcorn et rouvrez avec Internet. Le nouveau service worker attend la fermeture des anciennes pages. Pour un test immédiat, supprimez l’ancien service worker/cache depuis les outils du navigateur, en gardant `localStorage` si vous souhaitez conserver les résultats.
+- Après modification des fichiers, incrémentez la version du cache dans `sw.js` (`v1.3.0` → `v1.3.1`), publiez puis fermez **tous** les onglets/fenêtres Popcorn et rouvrez avec Internet. Depuis la 1.3 le nouveau service worker s’active seul (`skipWaiting`) et l’app affiche un message invitant à recharger. Pour un test immédiat, supprimez l’ancien service worker/cache depuis les outils du navigateur, en gardant `localStorage` si vous souhaitez conserver les résultats.
 
 ## Structure
 
 ```text
 popcorn/
   index.html              interface et navigation
-  styles.css              thème et adaptation mobile
+  styles.css              thème Arcade et adaptation mobile
+  sport.css               thème Sport (noir et blanc, titres condensés)
+  fonts/                  police Anton (licence OFL) embarquée en local
   data.js                 segments et coureurs fictifs
   core.js                 difficulté, fluidité, distances, validation
   app.js                  interactions et stockage local
   watch-adapters.js       contrat fournisseurs et import JSON local
   challenges.js           coins des coureurs, invitations et duels
+  progress.js             niveaux, badges, records, estimations, profil altimétrique schématique
   manifest.webmanifest    paramètres d’installation
   sw.js                   cache hors ligne
   icons/                  SVG, PNG et icône Apple
@@ -139,7 +148,7 @@ popcorn/
   VERIFICATION.md         résultats des contrôles réalisés
 ```
 
-Pour relancer les tests de calcul/validation : `node tests/core.test.cjs` et `node tests/challenges.test.cjs` (Node.js 18+). Les tests visuels et hors ligne réalisés lors de la création sont résumés dans `VERIFICATION.md`.
+Pour relancer les tests de calcul/validation : `node tests/core.test.cjs`, `node tests/challenges.test.cjs` et `node tests/progress.test.cjs` (Node.js 18+). Les tests visuels et hors ligne réalisés lors de la création sont résumés dans `VERIFICATION.md`.
 
 ## Si quelque chose ne fonctionne pas
 

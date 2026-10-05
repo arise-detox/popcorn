@@ -2,6 +2,23 @@
 
 Réalisées le 5 octobre 2026. Ce rapport distingue les contrôles effectués des compatibilités prévues.
 
+## Popcorn 1.3 — progression, records, chrono persistant, GPX (5 octobre 2026)
+
+Contrôles réalisés dans le navigateur intégré de Claude, sur un serveur local (Node n’est pas installé sur ce poste : les fichiers `tests/*.test.cjs` ont été exécutés dans le navigateur avec une petite doublure de `require`/`assert`).
+
+- `tests/core.test.cjs` : 19 assertions réussies (dont le départ GPS optionnel d’une activité). `tests/progress.test.cjs` : toutes les assertions réussies (nature d’un résultat premier/record, records battus en ordre chronologique, série de jours, semaine du lundi, niveaux, points, 13 badges, estimation de Riegel, tableau d’allures, profil altimétrique déterministe dont le dénivelé cumulé égale celui annoncé).
+- Carnet : niveau, points, barre de progression, statistiques, anneau d’objectif hebdomadaire, badges verrouillés/débloqués, records. Aucun débordement horizontal à 320 px sur les cinq écrans.
+- Ajout d’un temps meilleur que le record : message « nouveau record » avec écart et confettis (désactivés si la préférence de réduction des animations est active).
+- Chrono : lancé, fenêtre fermée, barre « Chrono » visible, rechargement de la page, reprise à 7:07 après avancement simulé de l’heure de départ, fin et suppression de la clé de stockage. Un second duel est redirigé vers le chrono en cours.
+- Import GPX synthétique de 2,4 km avec un saut de signal : distance 2 387 m, durée 12:00, départ à 0 m du segment, association acceptée dans la tolérance de 3 %.
+- Sauvegarde puis effacement puis restauration : 5 résultats et 2 favoris retrouvés ; un fichier invalide est refusé avec un message.
+- Filtre Favoris (2 segments), Surprends-moi (ouvre une fiche), favoris cerclés de jaune sur le schéma.
+- Service worker : cache `v1.3.0`, `progress.js` dans le shell, `skipWaiting`.
+
+- Style Sport (`sport.css`) : accueil, carte, liste, fiche segment, carnet, défis, duel et navigation contrôlés à 375 px ; aucun débordement horizontal à 375 px sur les cinq écrans ; le style Sport est la seule apparence (bascule retirée) ; aucune erreur dans la console.
+
+Limites : pas d’essai sur iPhone réel ; la police Anton (`fonts/anton-latin.woff2`, 18 Ko, licence OFL dans `fonts/ANTON-OFL.txt`) est embarquée en local et chargée sans requête externe ; le verrou d’écran (Wake Lock) n’a pas pu être confirmé dans le navigateur de test ; le partage natif n’a pas été déclenché ; les GPX de vraies montres n’ont pas été essayés.
+
 ## Défis 1.2 et reprise après interruption de Codex
 
 - Les fichiers de travail ont été retrouvés après le plantage de Codex. Le serveur d’aperçu a été relancé. Ce contrôle ne diagnostique ni ne répare la cause du plantage de Codex.
