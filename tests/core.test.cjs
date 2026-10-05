@@ -17,4 +17,7 @@ assert.throws(()=>C.validateActivity({...activity,durationSeconds:0}));
 assert.throws(()=>C.validateActivity({...activity,distanceMeters:'2400'}));
 assert.throws(()=>C.validateActivity({...activity,startedAt:'pas une date'}));
 assert.throws(()=>C.validateActivity({...activity,sport:'cycling'}));
-console.log('16 assertions de calcul et validation : OK');
+assert.deepEqual(C.validateActivity({...activity,start:{lat:48.85,lon:2.35}}).start,{lat:48.85,lon:2.35});
+assert.equal(C.validateActivity({...activity,start:{lat:'x',lon:2.35}}).start,undefined);
+assert.equal(C.validateActivity({...activity,start:{lat:99,lon:2.35}}).start,undefined);
+console.log('19 assertions de calcul et validation : OK');
