@@ -31,23 +31,47 @@
   function toast(message) { $('toast').textContent = message; $('toast').hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>$('toast').hidden=true,4500); }
   function persist() { try { localStorage.setItem(key,JSON.stringify(state)); storageOK=true; return true; } catch { storageOK=false; toast('Stockage indisponible : ces changements ne dureront que cette session.'); return false; } }
   const badge = s => `<span class="badge ${C.difficulty(s)==='Facile'?'easy':C.difficulty(s)==='Moyen'?'medium':'hard'}">${C.difficulty(s)}</span>`;
-  const route = (s,cls='mini-route') => `<svg class="${cls}" viewBox="0 0 300 130" role="img" aria-label="${s.custom?'Schéma décoratif, sans tracé réel':'Motif de tracé fictif'}"><path d="${s.shape}" fill="none" stroke="#2857f0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${s.shape.match(/M(\d+)/)[1]}" cy="${s.shape.match(/M\d+ (\d+)/)[1]}" r="8" fill="#b9412d"/></svg>`;
+  const route = (s,cls='mini-route') => { const sq=cls==='mini-route'&&s.shapeSq, d=sq?s.shapeSq:s.shape, m=/M([\d.]+) ([\d.]+)/.exec(d); return `<svg class="${cls}" viewBox="${sq?'0 0 130 130':'0 0 300 130'}" role="img" aria-label="${s.custom?'Schéma décoratif, sans tracé réel':s.track?'Forme du tracé du segment':'Motif de tracé fictif'}"><path d="${d}" fill="none" stroke="#2857f0" stroke-width="${sq?5:7}" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${m[1]}" cy="${m[2]}" r="${sq?6:8}" fill="#b9412d"/></svg>`; };
   const bestOf = s => state.attempts.filter(a=>a.segmentId===s.id).sort((a,b)=>a.seconds-b.seconds)[0];
   const pbLine = s => { const b = bestOf(s); return b ? `<p class="pb-line">★ Votre record <b>${C.time(b.seconds)}</b> · ${C.time(b.seconds/s.km)} /km</p>` : ''; };
-  function card(s) { return `<article class="segment-card"><button class="card-open" data-segment="${s.id}" aria-label="Voir ${escape(s.name)}">${badge(s)}<span class="distance-away">à ${number(C.distance(origin,s))} km</span><h3>${escape(s.name)}</h3><p class="area">${escape(s.area)}${s.custom?' · Proposé, non vérifié':''}</p><div class="metrics"><span><b>${number(s.km)}</b> km</span><span><b>${s.gain}</b> m D+</span><span><b>${s.lights}</b> feu${s.lights>1?'x':''}</span></div>${pbLine(s)}</button><div class="card-aside"><button class="favorite" data-favorite="${s.id}" aria-label="${state.favorites.includes(s.id)?'Retirer':'Ajouter'} ${escape(s.name)} des favoris" aria-pressed="${state.favorites.includes(s.id)}">${state.favorites.includes(s.id)?'★':'☆'}</button>${route(s)}<span class="flow"><b>${C.flow(s)}</b>/100<br>${s.custom?'fluidité estimée':'fluidité démo'}</span></div></article>`; }
+  function card(s,i=0) { return `<article class="segment-card" style="--i:${Math.min(i,12)}"><button class="card-open" data-segment="${s.id}" aria-label="Voir ${escape(s.name)}">${badge(s)}<span class="distance-away">à ${number(C.distance(origin,s))} km</span><h3>${escape(s.name)}</h3><p class="area">${escape(s.area)}${s.custom?' · Proposé, non vérifié':''}</p><div class="metrics"><span><b>${number(s.km)}</b> km</span><span><b>${s.gain}</b> m D+</span><span><b>${s.lights}</b> feu${s.lights>1?'x':''}</span></div>${pbLine(s)}</button><div class="card-aside"><button class="favorite" data-favorite="${s.id}" aria-label="${state.favorites.includes(s.id)?'Retirer':'Ajouter'} ${escape(s.name)} des favoris" aria-pressed="${state.favorites.includes(s.id)}">${state.favorites.includes(s.id)?'★':'☆'}</button>${route(s)}<span class="flow"><b>${C.flow(s)}</b>/100<br>${s.custom?'fluidité estimée':'fluidité démo'}</span></div></article>`; }
   function filtered() {
     const query=$('search').value.trim().toLocaleLowerCase('fr-FR'), radius=Number($('radius').value);
     let result=segments.filter(s=>(!s.custom||s.visibility==='public') && (!favOnly||state.favorites.includes(s.id)) && (level==='all'||C.difficulty(s)===level) && `${s.name} ${s.area}`.toLocaleLowerCase('fr-FR').includes(query) && C.distance(origin,s)<=radius && (!$('friendly').checked || (s.pedestrian>=70 && s.pedestrian+s.sidewalk>=90)));
     return result.sort((a,b)=>$('sort').value==='flow' ? C.flow(b)-C.flow(a) : $('sort').value==='short' ? a.km-b.km : C.distance(origin,a)-C.distance(origin,b));
   }
   const originInView = (minLon,maxLon,minLat,maxLat) => origin.lon>=minLon && origin.lon<=maxLon && origin.lat>=minLat && origin.lat<=maxLat;
+  /* Fond de carte schématique mais géographique : positions approchées de la Seine, de la Marne et du périphérique (pas un relevé). */
+  const GEO = {
+    seine:[[48.54,2.67],[48.61,2.48],[48.68,2.43],[48.73,2.45],[48.78,2.42],[48.815,2.395],[48.842,2.367],[48.853,2.35],[48.864,2.321],[48.858,2.294],[48.848,2.278],[48.835,2.235],[48.826,2.228],[48.845,2.213],[48.87,2.222],[48.885,2.24],[48.903,2.255],[48.905,2.285],[48.925,2.295],[48.93,2.255],[48.945,2.235],[48.935,2.2],[48.905,2.15],[48.895,2.105],[48.93,2.06],[48.95,2.03],[48.99,1.95]],
+    marne:[[48.815,2.41],[48.83,2.45],[48.82,2.48],[48.835,2.51],[48.83,2.55],[48.85,2.62],[48.87,2.70],[48.9,2.78]],
+    paris:[[48.902,2.335],[48.9,2.399],[48.88,2.415],[48.845,2.415],[48.816,2.41],[48.815,2.335],[48.828,2.27],[48.85,2.25],[48.87,2.257],[48.885,2.29]],
+    bois:[{n:'BOIS DE BOULOGNE',lat:48.863,lon:2.252,rl:.017,rt:.012},{n:'BOIS DE VINCENNES',lat:48.832,lon:2.44,rl:.025,rt:.012}],
+    cities:{paris:[['PARIS',48.857,2.352,1],['LA DÉFENSE',48.892,2.238,0],['SCEAUX',48.7777,2.2905,0],['CRÉTEIL',48.7904,2.4556,0]],idf:[['PARIS',48.857,2.352,1],['VERSAILLES',48.8049,2.1204,0],['CERGY',49.0364,2.0763,0],['ST-GERMAIN',48.8985,2.0935,0],['MELUN',48.54,2.66,0]]}
+  };
+  const MAP_VIEWS = {paris:{minLon:2.2,maxLon:2.5,minLat:48.795,maxLat:48.925},idf:{minLon:1.95,maxLon:2.75,minLat:48.55,maxLat:49.08}};
+  let mapMode = 'paris', mapShown = '', listIds = '';
   function map(list) {
-    const minLon=Math.min(2.19,...list.map(s=>s.lon))-.005,maxLon=Math.max(2.45,...list.map(s=>s.lon))+.005,minLat=Math.min(48.743,...list.map(s=>s.lat))-.005,maxLat=Math.max(48.923,...list.map(s=>s.lat))+.005;
-    const x=lon=>42+(lon-minLon)/(maxLon-minLon)*440, y=lat=>28+(maxLat-lat)/(maxLat-minLat)*315;
-    $('map').innerHTML=`<svg viewBox="0 0 530 370" role="group" aria-label="Schéma des départs de segments autour de Paris. Choisissez un point pour ouvrir sa fiche."><defs><pattern id="grid" width="35" height="35" patternUnits="userSpaceOnUse"><path d="M35 0H0V35" fill="none" stroke="#d1def4" stroke-width=".7"/></pattern></defs><rect width="530" height="370" fill="url(#grid)"/><path d="M70 280 Q130 225 210 245 T320 155 T430 105" stroke="#9bcef7" stroke-width="23" fill="none"/><path d="M70 280 Q130 225 210 245 T320 155 T430 105" stroke="#eaf7ff" stroke-width="2" fill="none"/><ellipse cx="285" cy="126" rx="88" ry="74" fill="#f3f7ff" opacity=".65"/><path d="M170 80L400 210 M175 220L385 45 M125 125L445 160" stroke="#b9cced" stroke-width="5" stroke-dasharray="7 8" fill="none"/><text x="282" y="130" text-anchor="middle" font-size="23" fill="#6981ad" font-weight="650" letter-spacing="4">PARIS</text><text x="90" y="220" font-size="12" fill="#526f9e">OUEST PARISIEN</text><text x="193" y="347" font-size="12" fill="#526f9e">SCEAUX</text><text x="395" y="223" font-size="12" fill="#526f9e">VINCENNES</text><text x="30" y="30" font-size="12" fill="#526f9e">N ↑</text>${list.map(s=>`<g class="map-marker" tabindex="0" role="button" data-segment="${s.id}" aria-label="${escape(s.name)}" transform="translate(${x(s.lon).toFixed(1)} ${y(s.lat).toFixed(1)})"><title>${escape(s.name)}</title><circle r="14" fill="${C.difficulty(s)==='Difficile'?'#b9412d':'#142652'}" stroke="${state.favorites.includes(s.id)?'#ffdf59':'#f3f7ff'}" stroke-width="${state.favorites.includes(s.id)?5:4}"/><text y="5" text-anchor="middle" fill="#ffdf59" font-size="14" font-weight="700">${segments.indexOf(s)+1}</text></g>`).join('')}${located&&originInView(minLon,maxLon,minLat,maxLat)?`<g transform="translate(${x(origin.lon).toFixed(1)} ${y(origin.lat).toFixed(1)})" role="img" aria-label="Votre position"><circle r="16" fill="#2857f0" opacity=".18" class="you-pulse"/><circle r="7" fill="#2857f0" stroke="#fff" stroke-width="3"/><text y="-14" text-anchor="middle" font-size="11" font-weight="700" fill="#2857f0">Vous</text></g>`:''}</svg>`;
-    $('map-count').textContent=`${list.length} départ${list.length>1?'s':''}`;
+    const v=MAP_VIEWS[mapMode], k=Math.cos(48.85*Math.PI/180), W=530, pad=26;
+    const spanX=(v.maxLon-v.minLon)*k, spanY=v.maxLat-v.minLat, H=Math.round((W-2*pad)*spanY/spanX+2*pad);
+    const x=lon=>pad+(lon-v.minLon)*k/spanX*(W-2*pad), y=lat=>pad+(v.maxLat-lat)/spanY*(H-2*pad);
+    const P=pts=>pts.map((p,i)=>(i?'L':'M')+x(p[1]).toFixed(1)+' '+y(p[0]).toFixed(1)).join(' ');
+    const wide=mapMode==='paris'?13:6, inside=s=>s.lon>=v.minLon&&s.lon<=v.maxLon&&s.lat>=v.minLat&&s.lat<=v.maxLat;
+    const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+    const bois=mapMode==='paris'?GEO.bois.map(b=>`<ellipse class="bois" cx="${x(b.lon).toFixed(1)}" cy="${y(b.lat).toFixed(1)}" rx="${(b.rl*k/spanX*(W-2*pad)).toFixed(1)}" ry="${(b.rt/spanY*(H-2*pad)).toFixed(1)}" fill="#e4e8df" stroke="none"/><text x="${x(b.lon).toFixed(1)}" y="${(y(b.lat)+4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#8a8a8c" letter-spacing="1.5">${b.n.replace('BOIS DE ','')}</text>`).join(''):'';
+    const labels=GEO.cities[mapMode].map(c=>`<text x="${x(c[2]).toFixed(1)}" y="${y(c[1]).toFixed(1)}" text-anchor="middle" font-size="${c[3]?(mapMode==='paris'?22:15):11}" fill="${c[3]?'#6981ad':'#526f9e'}" font-weight="${c[3]?650:500}" letter-spacing="${c[3]?4:1.5}">${c[0]}</text>`).join('');
+    let shown=0,hidden=0; const fresh=mapShown!==mapMode; mapShown=mapMode;
+    const markers=list.map((s,i)=>{
+      const out=!inside(s); if(out){hidden++;return '';} shown++;
+      const px=clamp(x(s.lon),pad-8,W-pad+8), py=clamp(y(s.lat),pad-8,H-pad+8), fav=state.favorites.includes(s.id);
+      return `<g class="map-marker${out?' edge':''}" tabindex="0" role="button" data-segment="${s.id}" aria-label="${escape(s.name)}${out?' (hors du cadre de la carte)':''}" transform="translate(${px.toFixed(1)} ${py.toFixed(1)})"><g class="mk-in" style="--i:${i}"><title>${escape(s.name)}</title><circle r="${mapMode==='paris'?14:10}" fill="${C.difficulty(s)==='Difficile'?'#b9412d':'#142652'}" stroke="${fav?'#ffdf59':'#f3f7ff'}" stroke-width="${fav?5:4}"${out?' stroke-dasharray="4 3"':''}/><text y="5" text-anchor="middle" fill="#ffdf59" font-size="${mapMode==='paris'?14:11}" font-weight="700">${segments.indexOf(s)+1}</text></g></g>`;
+    }).join('');
+    const you=located&&originInView(v.minLon,v.maxLon,v.minLat,v.maxLat)?`<g transform="translate(${x(origin.lon).toFixed(1)} ${y(origin.lat).toFixed(1)})" role="img" aria-label="Votre position"><circle r="16" fill="#2857f0" opacity=".18" class="you-pulse"/><circle r="7" fill="#2857f0" stroke="#fff" stroke-width="3"/><text y="-14" text-anchor="middle" font-size="11" font-weight="700" fill="#2857f0">Vous</text></g>`:'';
+    $('map').innerHTML=`<svg class="${fresh?'fresh':''}" viewBox="0 0 ${W} ${H}" role="group" aria-label="Schéma des départs de segments ${mapMode==='paris'?'à Paris et en proche couronne':'en Île-de-France'}. Choisissez un point pour ouvrir sa fiche."><defs><pattern id="grid" width="35" height="35" patternUnits="userSpaceOnUse"><path d="M35 0H0V35" fill="none" stroke="#d1def4" stroke-width=".7"/></pattern></defs><rect width="${W}" height="${H}" fill="url(#grid)"/>${bois}<path class="map-paris" d="${P(GEO.paris)} Z" fill="#fff" fill-opacity=".7" stroke="#cfcfcf" stroke-width="1.5" stroke-dasharray="5 5"/><path class="map-water" d="${P(GEO.seine)}" stroke="#9bcef7" stroke-width="${wide}" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="${P(GEO.seine)}" stroke="#eaf7ff" stroke-width="2" fill="none"/><path class="map-water" d="${P(GEO.marne)}" stroke="#9bcef7" stroke-width="${Math.round(wide*.55)}" stroke-linecap="round" stroke-linejoin="round" fill="none"/><text x="${pad-6}" y="${pad-8}" font-size="12" fill="#526f9e">N ↑</text>${labels}${markers}${you}</svg>`;
+    $('map-count').textContent=`${shown} départ${shown>1?'s':''}${hidden?` · ${hidden} hors cadre`:''}`;
+    document.querySelectorAll('[data-map]').forEach(b=>{const on=b.dataset.map===mapMode;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});
   }
-  function renderExplore() { const list=filtered(); $('result-count').textContent=`${list.length} segment${list.length>1?'s':''}`; $('segment-list').innerHTML=list.length?list.map(card).join(''):'<div class="empty">Aucun segment dans ces critères. Élargissez le rayon ou changez les filtres.</div>'; map(list); }
+  function renderExplore() { const list=filtered(); const ids=list.map(s=>s.id).join(); $('segment-list').classList.toggle('enter',ids!==listIds); listIds=ids; $('result-count').textContent=`${list.length} segment${list.length>1?'s':''}`; $('segment-list').innerHTML=list.length?list.map(card).join(''):'<div class="empty">Aucun segment dans ces critères. Élargissez le rayon ou changez les filtres.</div>'; map(list); }
   function rankingRows(s) {
     const seed = s.custom ? [] : window.POPCORN_RUNNERS.map((r,i)=>({name:r.name,seconds:Math.round(s.km*(r.secondsPerKm+s.gain/s.km*.6)+i*2),color:r.color,local:false}));
     // Une seule meilleure performance par coureur ; un seul coureur local (Vous).
@@ -97,38 +121,128 @@
     return true;
   }
   function profileSvg(s) {
-    const ep=P.elevationProfile(s),n=ep.points.length,W=300,H=90,top=14,bottom=10,span=Math.max(ep.max,12);
+    const ep=s.eleProfile?(()=>{const mn=Math.min(...s.eleProfile);const pts=s.eleProfile.map(v=>v-mn);return {points:pts,max:Math.max(...pts,1)};})():P.elevationProfile(s),n=ep.points.length,W=300,H=90,top=14,bottom=10,span=Math.max(ep.max,12);
     const xy=ep.points.map((v,i)=>`${(i/(n-1)*W).toFixed(1)} ${(H-bottom-v/span*(H-bottom-top)).toFixed(1)}`);
-    return `<figure class="elev"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Profil altimétrique schématique : environ ${s.gain} mètres de dénivelé positif sur ${number(s.km)} kilomètres"><defs><linearGradient id="elev-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2857f0" stop-opacity=".35"/><stop offset="1" stop-color="#2857f0" stop-opacity=".04"/></linearGradient></defs><path d="M0 ${H-bottom} L${xy.join(' L')} L${W} ${H-bottom} Z" fill="url(#elev-g)"/><path d="M${xy.join(' L')}" fill="none" stroke="#2857f0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 ${H-bottom}H${W}" stroke="#b5c5e2" stroke-width="1"/></svg><figcaption><span>0 km</span><span>+${s.gain} m D+</span><span>${number(s.km)} km</span></figcaption><small>Profil schématique calculé à partir du dénivelé annoncé : il ne représente pas le relief réel.</small></figure>`;
+    return `<figure class="elev"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Profil altimétrique ${s.eleProfile?'':'schématique '}: environ ${s.gain} mètres de dénivelé positif sur ${number(s.km)} kilomètres"><defs><linearGradient id="elev-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2857f0" stop-opacity=".35"/><stop offset="1" stop-color="#2857f0" stop-opacity=".04"/></linearGradient></defs><path d="M0 ${H-bottom} L${xy.join(' L')} L${W} ${H-bottom} Z" fill="url(#elev-g)"/><path d="M${xy.join(' L')}" fill="none" stroke="#2857f0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M0 ${H-bottom}H${W}" stroke="#b5c5e2" stroke-width="1"/></svg><figcaption><span>0 km</span><span>+${s.gain} m D+</span><span>${number(s.km)} km</span></figcaption><small>${s.eleProfile?'Profil d’altitude d’après un modèle numérique de terrain, le long du tracé (précision de l’ordre de la dizaine de mètres).':'Profil schématique calculé à partir du dénivelé annoncé : il ne représente pas le relief réel.'}</small></figure>`;
   }
   function myCard(s) {
     const b=bestOf(s),est=P.predict(state.attempts,segById,s.km);
     const paces=P.paceTable(s.km).map(r=>`<tr><td>${C.time(r.pace)} /km</td><td><strong>${C.time(r.seconds)}</strong></td></tr>`).join('');
     return `<section class="my-card">${b?`<p class="eyebrow">VOTRE RECORD</p><p class="my-record"><strong>${C.time(b.seconds)}</strong> <span>${C.time(b.seconds/s.km)} /km · ${date(b.at)}</span></p>`:'<p class="eyebrow">VOTRE RECORD</p><p class="muted small-note">Pas encore de temps ici. Ajoutez le vôtre ou lancez un duel fantôme pour fixer une référence.</p>'}${est?`<p class="small-note est">Estimation d’après vos derniers résultats : <strong>≈ ${C.time(est.seconds)}</strong> <span class="muted">(formule de Riegel, indicatif)</span></p>`:''}<details class="pace-details"><summary>Temps selon l’allure</summary><table class="pace-table"><tbody>${paces}</tbody></table></details></section>`;
   }
+  /* Navigation vers le départ : liens vers les applications de plan (le trajet est calculé par elles) et guide boussole
+     (position et orientation lues sur l'appareil, rien n'est enregistré ni envoyé). */
+  const navPanel = s => { const ll=`${s.lat},${s.lon}`, g='https://www.google.com/maps/dir/?api=1&destination='+ll+'&travelmode=';
+    const links=[['🚶 À pied',g+'walking'],['🚇 Transports',g+'transit'],['🚲 Vélo',g+'bicycling'],['Plans Apple',`https://maps.apple.com/?daddr=${ll}&dirflg=w`]];
+    return `<section class="nav-panel" aria-labelledby="nav-title"><p class="eyebrow">NAVIGATION</p><h3 id="nav-title">Rejoindre le départ</h3><p class="muted small-note">${number(C.distance(origin,s))} km à vol d’oiseau ${located?'depuis votre position':'depuis le centre de Paris'}. Le trajet exact est calculé par l’application de plan que vous choisissez.</p><div class="nav-links">${links.map(l=>`<a class="nav-link" href="${l[1]}" target="_blank" rel="noopener noreferrer">${l[0]}</a>`).join('')}</div><button class="secondary guide-btn" type="button" data-guide="${s.id}"><span aria-hidden="true">🧭</span> Me guider avec la boussole</button><div id="guide-box" class="guide-box" aria-live="polite"></div></section>`; };
+  const bearing = (a,b) => { const r=Math.PI/180, dl=(b.lon-a.lon)*r, y=Math.sin(dl)*Math.cos(b.lat*r), x=Math.cos(a.lat*r)*Math.sin(b.lat*r)-Math.sin(a.lat*r)*Math.cos(b.lat*r)*Math.cos(dl); return (Math.atan2(y,x)/r+360)%360; };
+  const COMPASS = ['nord','nord-est','est','sud-est','sud','sud-ouest','ouest','nord-ouest'];
+  const dist = km => km<1 ? `${Math.max(10,Math.round(km*100)*10)} m` : `${number(km)} km`;
+  let guide = null;
+  function stopGuide() {
+    if(!guide) return;
+    if(guide.wid!=null) navigator.geolocation.clearWatch(guide.wid);
+    window.removeEventListener('deviceorientationabsolute',guide.onO,true); window.removeEventListener('deviceorientation',guide.onO,true);
+    guide = null;
+    const box=$('guide-box'); if(box) box.innerHTML='';
+  }
+  function startGuide(s) {
+    const box=$('guide-box');
+    if(!navigator.geolocation){box.innerHTML='<p class="muted">Géolocalisation indisponible sur cet appareil : utilisez les boutons ci-dessus.</p>';return;}
+    stopGuide();
+    const g = guide = {pos:null,heading:null,wid:null,arrived:false,onO:null};
+    box.innerHTML=`<div class="compass"><svg class="compass-svg" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" class="compass-ring"/><text x="60" y="15" text-anchor="middle" class="compass-n">N</text><g id="guide-rot" class="compass-rot"><path d="M60 22 L76 66 L60 58 L44 66 Z" class="compass-arrow"/></g><circle cx="60" cy="60" r="4" class="compass-hub"/></svg><div class="compass-text"><strong id="guide-dist">…</strong><span id="guide-sub">Recherche de votre position…</span><small id="guide-acc"></small></div></div><button class="text-button" type="button" data-guide-stop>Arrêter le guidage</button>`;
+    const paint = () => {
+      if(!guide||!g.pos) return;
+      const km=C.distance(g.pos,s), b=bearing(g.pos,s), rot=g.heading==null?b:(b-g.heading+360)%360;
+      const rotEl=$('guide-rot'); if(!rotEl) return;
+      rotEl.style.transform=`rotate(${rot}deg)`;
+      $('guide-dist').textContent=km<.05?'Vous y êtes !':dist(km);
+      $('guide-sub').textContent=km<.05?'Lancez le chrono quand vous êtes prêt.':`Direction ${COMPASS[Math.round(b/45)%8]} · ≈ ${Math.max(1,Math.round(km/5*60))} min à pied${g.heading==null?' · boussole indisponible : la flèche est repérée par rapport au nord':''}`;
+      $('guide-acc').textContent=`Précision ± ${Math.round(g.pos.acc)} m`;
+      $('guide-rot').closest('.compass').classList.toggle('arrived',km<.05);
+      if(km<.05&&!g.arrived){g.arrived=true;try{navigator.vibrate&&navigator.vibrate([80,60,80]);}catch{}toast('Vous êtes au départ du segment.');}
+      if(km>=.08) g.arrived=false;
+    };
+    g.onO = e => { const h = typeof e.webkitCompassHeading==='number' ? e.webkitCompassHeading : (e.absolute||e.type==='deviceorientationabsolute') && typeof e.alpha==='number' ? (360-e.alpha)%360 : null; if(h!=null&&Number.isFinite(h)){g.heading=h;paint();} };
+    const listen = () => { window.addEventListener('deviceorientationabsolute',g.onO,true); window.addEventListener('deviceorientation',g.onO,true); };
+    // iOS demande une autorisation explicite, à lancer depuis un geste de l'utilisateur.
+    if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){ DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted'&&guide===g)listen();}).catch(()=>{}); } else listen();
+    g.wid=navigator.geolocation.watchPosition(p=>{g.pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};if(Number.isFinite(p.coords.heading)&&p.coords.speed>1&&g.heading==null)g.heading=p.coords.heading;paint();},err=>{if(guide!==g)return;$('guide-sub').textContent=err.code===1?'Localisation refusée : autorisez-la dans les réglages du navigateur.':'Position introuvable. Vérifiez le GPS.';},{enableHighAccuracy:true,maximumAge:5000,timeout:20000});
+  }
+  /* Export GPX pour montre : point de départ seul (hors ligne) ou tracé piéton généré à la demande (gpx.js). */
+  const G = window.PopcornGpx;
+  const watchPanel = s => `<section class="nav-panel watch-panel" aria-labelledby="watch-title"><p class="eyebrow">MONTRE</p><h3 id="watch-title">Tracé pour ma montre</h3><p class="muted small-note">Fichier GPX pour Garmin, ou Apple Watch via une application compatible. ${s.track?`Le fichier contient le tracé dessiné sur cette fiche (${s.loop?'boucle':'aller-retour'} de ${number(s.km)} km, avec altitudes), calculé sur OpenStreetMap : il fonctionne hors ligne. Il ne reproduit pas forcément le parcours exact du segment : vérifiez-le avant de courir.`:`Le tracé est généré à la demande : ${G.isLoop(s.shape)?'une boucle':'un aller-retour'} à pied d’environ ${number(s.km)} km depuis le départ, calculé sur les données OpenStreetMap. Il ne reproduit pas forcément le parcours exact du segment : vérifiez-le avant de courir. Seules des coordonnées sont envoyées au service de routage.`}</p><div class="nav-links"><button class="primary" type="button" data-gpx="${s.track?'track':'route'}">⌚ ${s.track?'Télécharger le tracé':'Générer le tracé'}</button><button class="secondary" type="button" data-gpx="point">Départ seul (hors ligne)</button></div><div id="gpx-box" class="guide-box" aria-live="polite"></div><details class="pace-details"><summary>Comment l’envoyer sur ma montre ?</summary><p class="small-note"><b>Garmin :</b> importez le fichier dans Garmin Connect (sur ordinateur : Entraînement &gt; Parcours &gt; Importer), puis synchronisez la montre et ouvrez Parcours. <b>Apple Watch :</b> elle ne lit pas le GPX directement ; ouvrez le fichier dans une application de course ou de randonnée qui l’accepte (par exemple WorkOutDoors ou Gaia GPS), puis synchronisez. Les étapes exactes dépendent de l’application.</p></details></section>`;
+  let gpxFile = null;
+  const gpxName = s => 'popcorn-' + String(s.id).replace(/[^a-z0-9-]+/gi,'-').slice(0,40) + '.gpx';
+  function downloadGpx(file) {
+    const url = URL.createObjectURL(new Blob([file.text],{type:'application/gpx+xml'})), a = document.createElement('a');
+    a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
+  }
+  async function makeGpx(s, kind) {
+    const box = $('gpx-box'); if (!box) return;
+    const start = {lat:s.lat,lon:s.lon};
+    if (kind === 'point') {
+      gpxFile = {name:gpxName(s).replace('.gpx','-depart.gpx'),text:G.buildGpx({name:s.name,description:'Point de départ du segment · '+s.area,start})};
+      downloadGpx(gpxFile); box.innerHTML='<p class="small-note">Fichier du point de départ téléchargé.</p>'; return;
+    }
+    if (kind === 'track') {
+      gpxFile = {name:gpxName(s),text:G.buildGpx({name:s.name,description:`${s.loop?'Boucle':'Aller-retour'} à pied de ${number(s.km)} km depuis le départ · généré par Popcorn (OpenStreetMap), à vérifier avant de courir`,start,points:s.track})};
+      downloadGpx(gpxFile);
+      const canShare = navigator.canShare && navigator.canShare({files:[new File([gpxFile.text],gpxFile.name,{type:'application/gpx+xml'})]});
+      box.innerHTML=`<div class="gpx-ready"><p><strong>${number(s.km)} km</strong> · ${s.loop?'boucle':'aller-retour'} · ${s.track.length} points · +${s.gain} m</p><p class="small-note">Fichier téléchargé. Tracé indicatif, pas le parcours officiel du segment.</p><div class="nav-links"><button class="secondary" type="button" data-gpx="download">Télécharger à nouveau</button>${canShare?'<button class="secondary" type="button" data-gpx="share">Partager…</button>':''}</div></div>`;
+      return;
+    }
+    box.innerHTML='<p class="small-note gpx-wait"><span class="spin" aria-hidden="true"></span> <span id="gpx-step">Calcul du tracé…</span></p>';
+    try {
+      const r = await G.routeFor(s,{onProgress:n=>{const el=$('gpx-step'); if(el) el.textContent=`Calcul du tracé… essai ${n}`;}});
+      if (!$('gpx-box')) return;
+      gpxFile = {name:gpxName(s),text:G.buildGpx({name:s.name,description:`${r.loop?'Boucle':'Aller-retour'} piéton d’environ ${number(r.distance/1000)} km depuis le départ · généré par Popcorn (OpenStreetMap), à vérifier avant de courir`,start,points:r.points})};
+      const canShare = navigator.canShare && navigator.canShare({files:[new File([gpxFile.text],gpxFile.name,{type:'application/gpx+xml'})]});
+      box.innerHTML=`<div class="gpx-ready"><p><strong>${number(r.distance/1000)} km</strong> · ${r.loop?'boucle':'aller-retour'} · ${r.points.length} points</p><p class="small-note">${r.off?`Distance visée : ${number(s.km)} km. L’écart est notable (le réseau de chemins ne permet pas mieux depuis ce départ) : vérifiez le tracé. `:''}Tracé indicatif, pas le parcours officiel du segment.</p><div class="nav-links"><button class="primary" type="button" data-gpx="download">Télécharger le .gpx</button>${canShare?'<button class="secondary" type="button" data-gpx="share">Partager…</button>':''}</div></div>`;
+    } catch (err) {
+      if ($('gpx-box')) box.innerHTML=`<p class="form-error">${escape(err instanceof TypeError?'Service de routage injoignable (hors ligne ?). Utilisez « Départ seul ».':err.message)}</p>`;
+    }
+  }
   function openSegment(id) {
     const s=segments.find(s=>s.id===id); if(!s)return; activeSegment=id;
-    $('detail-kind').textContent=s.custom?(s.visibility==='private'?'PRIVÉ · PROPOSÉ':'PUBLIC PAR LIEN · PROPOSÉ'):'SEGMENT DE DÉMO';
-    $('detail-content').innerHTML=`<p class="eyebrow">${escape(s.tag.toUpperCase())}</p><h2 id="detail-title" style="font-size:1.85rem">${escape(s.name)}</h2><p class="muted">${escape(s.area)}</p>${badge(s)}${route(s,'detail-route')}<div class="detail-metrics"><div><strong>${number(s.km)} km</strong><small>Distance fictive</small></div><div><strong>${s.gain} m</strong><small>Dénivelé positif fictif</small></div><div><strong>${C.flow(s)}/100</strong><small>Fluidité simulée</small></div></div>${profileSvg(s)}<p>${escape(s.description)}</p><ul class="quality-list"><li>${s.pedestrian} % piéton</li><li>${s.sidewalk} % avec trottoir</li><li>${s.lights} feu${s.lights>1?'x':''} (démo)</li></ul><p class="muted" style="font-size:.875rem">Difficulté : ${number(s.km+s.gain/100)} points (km + D+/100). Tracé fictif : vérifiez le terrain avant toute course.</p>${myCard(s)}${table(s)}<form class="effort-form" id="effort-form"><h3>Ajouter mon temps</h3><p class="muted">Saisie déclarative sur cet appareil. Aucun chronométrage GPS ni publication en ligne.</p><div class="time-fields"><label>Minutes<input id="minutes" type="number" inputmode="numeric" min="0" max="1440" step="1" value="${Math.ceil(s.km*5)}" required></label><label>Secondes<input id="seconds" type="number" inputmode="numeric" min="0" max="59" step="1" value="0" required></label></div><p id="effort-error" class="form-error" role="alert"></p><button type="submit" class="primary">Ajouter au classement local</button></form>`;
+    $('detail-kind').textContent=s.custom?(s.visibility==='private'?'PRIVÉ · PROPOSÉ':'PUBLIC PAR LIEN · PROPOSÉ'):'DÉMO · ' + (C.distance({lat:48.8566,lon:2.3522},s)<=11?'PARIS':'ÎLE-DE-FRANCE');
+    $('detail-content').innerHTML=`<p class="eyebrow">${escape(s.tag.toUpperCase())}</p><h2 id="detail-title" style="font-size:1.85rem">${escape(s.name)}</h2><p class="muted">${escape(s.area)}</p>${badge(s)}${route(s,'detail-route')}<div class="detail-metrics"><div><strong>${number(s.km)} km</strong><small>Distance indicative</small></div><div><strong>${s.gain} m</strong><small>Dénivelé indicatif</small></div><div><strong>${C.flow(s)}/100</strong><small>Fluidité simulée</small></div></div>${profileSvg(s)}<p>${escape(s.description)}</p><ul class="quality-list"><li>${s.pedestrian} % piéton</li><li>${s.sidewalk} % avec trottoir</li><li>${s.lights} feu${s.lights>1?'x':''} (démo)</li></ul><p class="muted" style="font-size:.875rem">Difficulté : ${number(s.km+s.gain/100)} points (km + D+/100). Tracé schématique, valeurs non relevées sur le terrain : vérifiez avant toute course.</p>${myCard(s)}${table(s)}<form class="effort-form" id="effort-form"><h3>Ajouter mon temps</h3><p class="muted">Saisie déclarative sur cet appareil. Aucun chronométrage GPS ni publication en ligne.</p><div class="time-fields"><label>Minutes<input id="minutes" type="number" inputmode="numeric" min="0" max="1440" step="1" value="${Math.ceil(s.km*5)}" required></label><label>Secondes<input id="seconds" type="number" inputmode="numeric" min="0" max="59" step="1" value="0" required></label></div><p id="effort-error" class="form-error" role="alert"></p><button type="submit" class="primary">Ajouter au classement local</button></form>`;
     if(s.custom){
       const content=$('detail-content');
-      content.innerHTML=content.innerHTML.replace('Distance fictive','Distance déclarée').replace('Dénivelé positif fictif','Dénivelé déclaré').replace('Fluidité simulée','Fluidité estimée').replace(' (démo)',' (déclarés)').replace('Tracé fictif : vérifiez le terrain avant toute course.','Schéma décoratif, sans tracé GPS : vérifiez le terrain et les indications du créateur.');
+      content.innerHTML=content.innerHTML.replace('Distance indicative','Distance déclarée').replace('Dénivelé indicatif','Dénivelé déclaré').replace('Fluidité simulée','Fluidité estimée').replace(' (démo)',' (déclarés)').replace('Tracé schématique, valeurs non relevées sur le terrain : vérifiez avant toute course.','Schéma décoratif, sans tracé GPS : vérifiez le terrain et les indications du créateur.');
       content.querySelector('.detail-route').insertAdjacentHTML('afterend',`<p class="info-card"><strong>Départ :</strong> ${escape(s.start)}<br><strong>Arrivée :</strong> ${escape(s.finish)}<br>Proposé par ${escape(s.creator)} · informations non vérifiées.</p>`);
       if(!rankingRows(s).length)content.querySelector('.leaderboard').insertAdjacentHTML('afterend','<p class="muted">Aucun résultat local sur ce segment pour le moment.</p>');
     }
+    if(!s.custom&&s.track){
+      const content=$('detail-content');
+      content.innerHTML=content.innerHTML.replace('Distance indicative','Distance du tracé').replace('Dénivelé indicatif','Dénivelé du tracé').replace('Tracé schématique, valeurs non relevées sur le terrain : vérifiez avant toute course.','Tracé : itinéraire à pied calculé sur OpenStreetMap depuis le départ, ' + (s.loop?'en boucle':'en aller-retour') + '. Il ne reproduit pas forcément le parcours exact du segment ; revêtement et feux restent des estimations. Vérifiez avant de courir.');
+    }
     $('effort-form').insertAdjacentHTML('beforebegin',`<div class="segment-actions"><button class="primary" data-race="${s.id}" data-ghost="${s.ghostId||'olympic'}">Défier un fantôme</button>${s.custom?`<button class="secondary" data-share="${s.id}">Inviter des coureurs</button>`:''}</div>`);
+    $('detail-content').querySelector('.quality-list').insertAdjacentHTML('afterend',navPanel(s)+watchPanel(s));
     if(!$('detail-dialog').open) $('detail-dialog').showModal();
+    document.querySelectorAll('#detail-content .detail-metrics strong').forEach(countUp);
     $('effort-form').addEventListener('submit',e=>{
       e.preventDefault(); const minutes=Number($('minutes').value),sec=Number($('seconds').value),total=minutes*60+sec;
       if(!Number.isInteger(minutes)||!Number.isInteger(sec)||minutes<0||sec<0||sec>59||total<1||total>86400){$('effort-error').textContent='Indiquez un temps entre 1 seconde et 24 heures.'; return;}
       if(addAttempt(id,total,'Saisie locale',new Date().toISOString())) $('detail-dialog').close();
     });
   }
+  // Compte de 0 à la valeur affichée (sauf mouvement réduit ou valeur du type 5:12).
+  function countUp(el) {
+    const text=el.textContent.trim(), m=/^(\D*?)(\d+(?:[.,]\d+)?)(.*)$/.exec(text);
+    if(!m||m[3].startsWith(':')||window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const end=parseFloat(m[2].replace(',','.')); if(!(end>0)) return;
+    const dec=/[.,]/.test(m[2]), t0=performance.now(), dur=900;
+    const step=now=>{ const k=Math.min(1,(now-t0)/dur), v=end*(1-Math.pow(1-k,3)); el.textContent=k>=1?text:m[1]+(dec?v.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1}):Math.round(v))+m[3]; if(k<1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
   function navigate() {
     const requested=location.hash.slice(1), view=requested.startsWith('invite=')?'challenges':['explorer','challenges','ranking','watches','profile'].includes(requested)?requested:'explorer';
     document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==`${view}-view`);
     document.querySelectorAll('[data-view]').forEach(el=>{const current=el.dataset.view===view;el.classList.toggle('active',current);if(current)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
     renderAll();
+    if(view==='profile') document.querySelectorAll('.stat b').forEach(countUp);
     handleInvitation(requested);
   }
   function previewActivity(activity) {
@@ -262,6 +376,13 @@
     const close=e.target.closest('[data-close]');if(close) $(close.dataset.close).close();
     if(e.target.closest('[data-action="about"]')) $('about-dialog').showModal();
   });
+  document.querySelectorAll('[data-map]').forEach(b=>b.addEventListener('click',()=>{mapMode=b.dataset.map;renderExplore();}));
+  document.addEventListener('click',e=>{const g=e.target.closest('[data-guide]');if(g){const s=segById(g.dataset.guide);if(s)startGuide(s);return;}if(e.target.closest('[data-guide-stop]'))stopGuide();});
+  document.addEventListener('click',async e=>{const b=e.target.closest('[data-gpx]');if(!b)return;const k=b.dataset.gpx,s=segById(activeSegment);if(!s)return;
+    if(k==='route'||k==='point'||k==='track'){b.disabled=true;await makeGpx(s,k);b.disabled=false;}
+    else if(k==='download'&&gpxFile)downloadGpx(gpxFile);
+    else if(k==='share'&&gpxFile){try{await navigator.share({files:[new File([gpxFile.text],gpxFile.name,{type:'application/gpx+xml'})],title:s.name});}catch{}}});
+  $('detail-dialog').addEventListener('close',()=>{stopGuide();gpxFile=null;});
   $('map').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset.segment){e.preventDefault();openSegment(e.target.dataset.segment);}});
   document.querySelectorAll('[data-level]').forEach(btn=>btn.addEventListener('click',()=>{level=btn.dataset.level;document.querySelectorAll('[data-level]').forEach(b=>{b.classList.toggle('active',b===btn);b.setAttribute('aria-pressed',String(b===btn));});renderExplore();}));
   ['search','radius','sort','friendly'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderExplore));

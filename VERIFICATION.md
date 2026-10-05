@@ -2,6 +2,16 @@
 
 Réalisées le 5 octobre 2026. Ce rapport distingue les contrôles effectués des compatibilités prévues.
 
+## Popcorn 1.4 — animations, Île-de-France, navigation (5 octobre 2026)
+
+- 36 segments (8 + 28) : identifiants uniques, coordonnées dans la région, parts piéton + trottoir ≤ 100 %, tracé valide.
+- Carte : cadres Paris (22 départs) et Île-de-France (35 départs, 1 hors cadre) ; bascule testée.
+- Fiche : bloc Navigation (4 liens + guide boussole) ; guide testé avec une position simulée (18,6 km, direction ouest, flèche orientée ; « Vous y êtes ! » à moins de 50 m). **Non testé** : vraie boussole et vrai GPS sur iPhone, ouverture des applications de plan.
+- Animations vérifiées dans le navigateur de développement (le volet masqué ralentit les animations) ; coupées avec prefers-reduced-motion.
+- GPX : `tests/gpx.test.cjs` (boucle/aller-retour, destination, XML échappé, routage simulé, erreur) réussi ; routage réel `routing.openstreetmap.de` testé sur 4 segments (Buttes 2 126 m pour 2,1 km, Versailles 6 678 m pour 7,2 km, canal Saint-Martin 4 308 m pour 4,6 km, lac de Créteil 3 332 m pour 3,3 km), fichier XML valide, départ = arrivée. **Non testé** : import réel dans Garmin Connect ou une application Apple Watch.
+- Tracés réels : 36 tracés générés (routage piéton OpenStreetMap, 4 à 5 orientations essayées par segment, score = écart de distance + recoupement) ; écart de distance ≤ 6 % pour 35 segments, 20 % pour Saint-Quentin (réseau de chemins) ; altitudes Open-Meteo pour les 36. `tests/tracks.test.cjs` (polyligne, forme d’icône, profil, dénivelé, application, coins proposés intacts) réussi. Icônes carrées des cartes et profil d’altitude réel vérifiés à l’écran ; GPX hors ligne téléchargé avec altitudes.
+- Cache du service worker : `v1.4.0`, `motion.css` dans le shell.
+
 ## Popcorn 1.3 — progression, records, chrono persistant, GPX (5 octobre 2026)
 
 Contrôles réalisés dans le navigateur intégré de Claude, sur un serveur local (Node n’est pas installé sur ce poste : les fichiers `tests/*.test.cjs` ont été exécutés dans le navigateur avec une petite doublure de `require`/`assert`).

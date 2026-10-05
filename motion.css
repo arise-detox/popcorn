@@ -1,0 +1,148 @@
+/* Popcorn 1.4 — mouvement et navigation du style « Sport ».
+   Fichier généré depuis motion.src.css (html[data-style="sport"] = html[data-style="sport"]). Toutes les animations sont coupées
+   par la règle prefers-reduced-motion de styles.css (animation:none !important). */
+
+@keyframes vIn{from{opacity:0;transform:translateY(16px)}}
+@keyframes rise{from{opacity:0;transform:translateY(26px) skewY(2deg)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.97)}}
+@keyframes draw{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+@keyframes draw700{from{stroke-dashoffset:700}to{stroke-dashoffset:0}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.2)}}
+@keyframes flow{to{stroke-dashoffset:-44}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@keyframes stripe{from{transform:skewX(-25deg) translateX(0)}to{transform:skewX(-25deg) translateX(-190px)}}
+@keyframes stripe2{from{transform:skewX(-25deg) translateX(0)}to{transform:skewX(-25deg) translateX(120px)}}
+@keyframes navPop{0%{transform:scale(.6)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes dlgIn{from{opacity:0;transform:translateY(34px) scale(.98)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,22px)}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes sheen{from{transform:translateX(-120%) skewX(-25deg)}to{transform:translateX(260%) skewX(-25deg)}}
+@keyframes ring{0%{transform:scale(.7);opacity:.55}100%{transform:scale(1.5);opacity:0}}
+@keyframes dot{0%,100%{transform:scale(1)}40%{transform:scale(1.5)}}
+@keyframes logoIn{from{opacity:0;transform:translateX(-24px)}}
+
+/* Changement d'onglet */
+html[data-style="sport"] .view:not([hidden]){animation:vIn .5s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .winged-logo{animation:logoIn .7s cubic-bezier(.2,.7,.2,1) both}
+
+/* Accueil : titre qui monte, bandes jaune et bleue qui glissent */
+html[data-style="sport"] .intro .eyebrow{animation:rise .6s cubic-bezier(.2,.7,.2,1) .05s both}
+html[data-style="sport"] .intro h1{animation:rise .75s cubic-bezier(.2,.7,.2,1) .15s both}
+html[data-style="sport"] .intro p:not(.eyebrow){animation:rise .7s cubic-bezier(.2,.7,.2,1) .3s both}
+html[data-style="sport"] .intro .primary{animation:rise .7s cubic-bezier(.2,.7,.2,1) .42s both}
+html[data-style="sport"] .intro h1 span{display:inline-block;animation:dot 2.4s ease-in-out 1s infinite;transform-origin:50% 90%}
+html[data-style="sport"] .intro:after{animation:stripe 7s ease-in-out infinite alternate}
+html[data-style="sport"] .intro:before{content:'';position:absolute;right:120px;top:-20px;width:34px;height:300%;background:#2857f0;transform:skewX(-25deg);opacity:.55;pointer-events:none;animation:stripe2 7s ease-in-out infinite alternate}
+html[data-style="sport"] .location span{display:inline-block;animation:dot 2s ease-in-out infinite}
+
+/* Bandeau défilant */
+html[data-style="sport"] .ticker{overflow:hidden;background:#ffdf59;color:#111;margin:0 0 4px;white-space:nowrap}
+html[data-style="sport"] .ticker-track{display:flex;width:max-content;animation:marquee 22s linear infinite}
+html[data-style="sport"] .ticker-track span{font-family:var(--hf);text-transform:uppercase;font-size:1.05rem;letter-spacing:.06em;padding:9px 0 7px 26px;display:inline-flex;align-items:center;gap:26px}
+html[data-style="sport"] .ticker-track span:after{content:'✦';font-size:.8rem}
+
+/* Boutons : reflet au survol, appui */
+html[data-style="sport"] .primary,html[data-style="sport"] .secondary,html[data-style="sport"] .chip,html[data-style="sport"] .nav-link{position:relative;overflow:hidden;transition:background .15s,transform .15s,border-color .15s,color .15s}
+html[data-style="sport"] .primary:after{content:'';position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,#ffffff55,transparent);transform:translateX(-120%) skewX(-25deg);pointer-events:none}
+html[data-style="sport"] .primary:hover:after{animation:sheen .8s ease}
+html[data-style="sport"] .intro .primary:after{background:linear-gradient(90deg,transparent,#11111122,transparent)}
+html[data-style="sport"] .chip:active,html[data-style="sport"] .secondary:active,html[data-style="sport"] .nav-link:active{transform:scale(.96)}
+html[data-style="sport"] .chip.active{animation:navPop .35s cubic-bezier(.3,1.6,.5,1)}
+
+/* Liste de segments : cartes en cascade */
+html[data-style="sport"] .segment-list.enter .segment-card{animation:cardIn .6s cubic-bezier(.2,.7,.2,1) calc(var(--i,0)*60ms) both}
+html[data-style="sport"] .segment-card{transition:transform .25s cubic-bezier(.2,.7,.2,1),background .2s,box-shadow .25s;position:relative}
+html[data-style="sport"] .segment-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px #00000020}
+html[data-style="sport"] .segment-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:#ffdf59;transform:scaleY(0);transform-origin:bottom;transition:transform .3s cubic-bezier(.2,.7,.2,1);z-index:1}
+html[data-style="sport"] .segment-card:hover:before,html[data-style="sport"] .segment-card:focus-within:before{transform:scaleY(1)}
+html[data-style="sport"] .mini-route path[stroke]{stroke-dasharray:1200;stroke-dashoffset:0;transition:stroke .3s}
+html[data-style="sport"] .segment-list.enter .mini-route path[stroke]{animation:draw 1.2s ease calc(.25s + var(--i,0)*60ms) both}
+html[data-style="sport"] .segment-card:hover .mini-route path[stroke]{stroke:#2857f0}
+html[data-style="sport"] .favorite{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+html[data-style="sport"] .favorite:hover{transform:scale(1.25) rotate(-8deg)}
+html[data-style="sport"] .favorite[aria-pressed=true]{animation:navPop .45s cubic-bezier(.3,1.6,.5,1)}
+
+/* Carte */
+html[data-style="sport"] .map-switch{display:flex;gap:8px;padding:0 20px 14px;flex-wrap:wrap}
+html[data-style="sport"] .map-wrap{height:auto!important;min-height:0}
+html[data-style="sport"] .map-wrap svg{display:block;width:100%;height:auto}
+html[data-style="sport"] .map-wrap svg ellipse.bois{fill:#e3e8de}
+html[data-style="sport"] .map-wrap svg path.map-paris{fill:#fff}
+html[data-style="sport"] .map-wrap svg path[stroke="#eaf7ff"]{stroke-dasharray:8 14;animation:flow 2.6s linear infinite}
+html[data-style="sport"] .map-wrap svg.fresh .mk-in{animation:pop .55s cubic-bezier(.3,1.6,.5,1) calc(var(--i,0)*40ms) backwards}
+html[data-style="sport"] .map-wrap svg.fresh{animation:fadeIn .5s ease}
+html[data-style="sport"] .map-marker{cursor:pointer}
+html[data-style="sport"] .mk-in{transform-box:fill-box;transform-origin:center;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+html[data-style="sport"] .map-marker:hover .mk-in,html[data-style="sport"] .map-marker:focus-visible .mk-in{transform:scale(1.3)}
+html[data-style="sport"] .map-marker.edge{opacity:.75}
+
+/* Navigation vers le départ */
+html[data-style="sport"] .nav-panel{background:#f5f5f5;border-left:6px solid #2857f0;padding:18px 18px 14px;margin:18px 0}
+html[data-style="sport"] .nav-panel h3{font-family:var(--hf);font-weight:400;text-transform:uppercase;font-size:1.5rem;letter-spacing:.01em;margin:2px 0 6px}
+html[data-style="sport"] .nav-links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+html[data-style="sport"] .nav-link{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;background:#111;color:#fff;border-radius:30px;font-weight:700;font-size:.92rem;text-decoration:none;text-align:center}
+html[data-style="sport"] .nav-link:hover{background:#2857f0}
+html[data-style="sport"] .guide-btn{width:100%;min-height:44px}
+html[data-style="sport"] .guide-box:empty{display:none}
+html[data-style="sport"] .guide-box{margin-top:12px}
+html[data-style="sport"] .compass{display:flex;align-items:center;gap:16px;background:#fff;padding:14px;animation:cardIn .45s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .compass-svg{width:112px;height:112px;flex:none}
+html[data-style="sport"] .compass-ring{fill:#fff;stroke:#111;stroke-width:3}
+html[data-style="sport"] .compass-n{font-family:var(--hf);font-size:13px;fill:#707072}
+html[data-style="sport"] .compass-rot{transform-origin:60px 60px;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+html[data-style="sport"] .compass-arrow{fill:#111;transition:fill .3s}
+html[data-style="sport"] .compass-hub{fill:#ffdf59;stroke:#111;stroke-width:2}
+html[data-style="sport"] .compass-text{display:grid;gap:3px;min-width:0}
+html[data-style="sport"] .compass-text strong{font-family:var(--hf);font-weight:400;font-size:2.4rem;line-height:1;letter-spacing:.005em}
+html[data-style="sport"] .compass-text span{font-size:.9rem;color:#111}
+html[data-style="sport"] .compass-text small{color:#707072}
+html[data-style="sport"] .compass.arrived{background:#ffdf59}
+html[data-style="sport"] .compass.arrived .compass-ring{stroke:#2857f0}
+html[data-style="sport"] .compass.arrived .compass-arrow{fill:#2857f0}
+html[data-style="sport"] .compass.arrived .compass-svg{animation:dot 1s ease-in-out infinite}
+
+/* Fiche d'un segment : tracé, profil et chiffres qui apparaissent */
+html[data-style="sport"] .detail-route path[stroke]{stroke-dasharray:1200;animation:draw 1.5s cubic-bezier(.4,.1,.2,1) .2s both}
+html[data-style="sport"] .detail-route circle{animation:fadeIn .4s ease both}
+html[data-style="sport"] .elev path:nth-of-type(1){animation:fadeIn 1.2s ease .4s both}
+html[data-style="sport"] .elev path:nth-of-type(2){stroke-dasharray:700;animation:draw700 1.4s cubic-bezier(.4,.1,.2,1) .2s both}
+html[data-style="sport"] .detail-metrics div{animation:cardIn .5s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .detail-metrics div:nth-child(2){animation-delay:.08s}
+html[data-style="sport"] .detail-metrics div:nth-child(3){animation-delay:.16s}
+html[data-style="sport"] .quality-list li{animation:cardIn .45s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .quality-list li:nth-child(2){animation-delay:.07s}
+html[data-style="sport"] .quality-list li:nth-child(3){animation-delay:.14s}
+html[data-style="sport"] dialog[open]{animation:dlgIn .4s cubic-bezier(.2,.8,.2,1)}
+html[data-style="sport"] dialog[open]::backdrop{animation:fadeIn .35s ease}
+html[data-style="sport"] .toast:not([hidden]){animation:toastIn .4s cubic-bezier(.3,1.4,.5,1)}
+
+/* Carnet */
+html[data-style="sport"] .stat{animation:cardIn .55s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .stat:nth-child(2){animation-delay:.07s}
+html[data-style="sport"] .stat:nth-child(3){animation-delay:.14s}
+html[data-style="sport"] .stat:nth-child(4){animation-delay:.21s}
+html[data-style="sport"] .badge-card{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+html[data-style="sport"] .badge-card:hover{transform:translateY(-3px) rotate(-1deg)}
+html[data-style="sport"] .badge-card.on .badge-emoji{display:inline-block;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+html[data-style="sport"] .badge-card.on:hover .badge-emoji{transform:scale(1.3) rotate(12deg)}
+html[data-style="sport"] .badge-prog i{transform-origin:left;animation:grow 1s cubic-bezier(.2,.7,.2,1) .2s both}
+html[data-style="sport"] .level-card{animation:cardIn .6s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .ghost-card,html[data-style="sport"] .custom-card,html[data-style="sport"] .watch-card{transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+html[data-style="sport"] .ghost-card:hover,html[data-style="sport"] .custom-card:hover,html[data-style="sport"] .watch-card:hover{transform:translateY(-3px)}
+
+/* Navigation basse */
+html[data-style="sport"] .bottom-nav a span{transition:transform .2s cubic-bezier(.3,1.6,.5,1),background .2s}
+html[data-style="sport"] .bottom-nav a:hover span{transform:translateY(-2px)}
+html[data-style="sport"] .bottom-nav a.active span{animation:navPop .45s cubic-bezier(.3,1.6,.5,1)}
+
+@media(max-width:380px){html[data-style="sport"] .nav-links{grid-template-columns:1fr}html[data-style="sport"] .compass{flex-direction:column;text-align:center}}
+html[data-style="sport"] .detail-metrics strong{white-space:nowrap;font-size:1.45rem}
+html[data-style="sport"] .detail-metrics{gap:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+html[data-style="sport"] .spin{display:inline-block;width:14px;height:14px;border:2px solid #111;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px}
+html[data-style="sport"] .watch-panel{border-left-color:#ffdf59}
+html[data-style="sport"] .watch-panel .nav-links button{min-height:44px;border-radius:30px;font-weight:700}
+html[data-style="sport"] .gpx-ready{background:#fff;padding:14px;animation:cardIn .45s cubic-bezier(.2,.7,.2,1) both}
+html[data-style="sport"] .gpx-ready strong{font-family:var(--hf);font-weight:400;font-size:1.8rem}
+html[data-style="sport"] .mini-route{width:78px;height:78px}

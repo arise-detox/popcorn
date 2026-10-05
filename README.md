@@ -1,8 +1,17 @@
 # Popcorn 🍿 — PWA de démonstration
 
-Version 1.3 · 5 octobre 2026 · Interface en français · Fichiers statiques sans compilation ni dépendances web externes.
+Version 1.4 · 5 octobre 2026 · Interface en français · Fichiers statiques sans compilation ni dépendances web externes (une seule requête externe, facultative et déclenchée par vous : le routage du tracé GPX, voir 1.4).
 
-**Cette version est un prototype fonctionnel avec données fictives, pas un service de compétition réel.** Les noms de lieux évoquent Paris et ses alentours. Les 8 segments, coordonnées approximatives de départ, distances, dénivelés, tracés, proportions de voies, feux et résultats sont des exemples sans validation terrain. Le schéma géographique et les motifs de tracé ne sont pas des itinéraires de navigation. Les montres ne sont pas connectées.
+**Cette version est un prototype fonctionnel avec données fictives, pas un service de compétition réel.** Les noms de lieux évoquent Paris et ses alentours. Les 8 segments d’origine sont fictifs ; les 28 ajoutés en 1.4 portent le nom de vrais parcs et berges de Paris et d’Île-de-France, avec le point de départ du lieu (position OpenStreetMap ou approchée). Distances, dénivelés, tracés, proportions de voies, feux et résultats sont des exemples sans validation terrain. Le schéma géographique et les motifs de tracé ne sont pas des itinéraires de navigation. Les montres ne sont pas connectées.
+
+## Nouveautés 1.4 : animations, Île-de-France, navigation
+
+- **28 segments de plus** : Buttes-Chaumont, Monceau, canal Saint-Martin, Coulée verte, Bercy, Montsouris, Champ de Mars, parc André-Citroën, La Villette, île de Puteaux, île Saint-Germain, Bagatelle, Hautes-Bruyères, Tremblay, bords de Marne, lac de Créteil, parc Georges-Valbon, Chanteraines, Poudrerie, forêt de Meudon, Vallée-aux-Loups, Grand Canal de Versailles, Grande Terrasse de Saint-Germain, Saint-Quentin-en-Yvelines, Cergy, forêt de Montmorency, bassin de Vaires et gorges de Franchard (Fontainebleau). Les points de départ ont été contrôlés par géocodage OpenStreetMap quand le lieu y est connu ; distance, dénivelé, revêtement et feux sont des **ordres de grandeur non relevés**.
+- **Carte Paris / Île-de-France** : bascule entre deux cadres, avec la Seine, la Marne et le périphérique en positions approchées (fond schématique, pas un plan). Les départs hors du cadre sont comptés mais non dessinés ; rayon jusqu’à 50 km.
+- **Navigation vers le départ** (fiche d’un segment) : boutons À pied, Transports, Vélo (Google Maps) et Plans Apple, qui ouvrent l’application de plan vers le point de départ ; le trajet est calculé par cette application. Le **guide boussole** utilise la position (`watchPosition`) et, si l’appareil le permet, l’orientation (autorisation demandée sur iPhone) pour montrer direction, distance à vol d’oiseau et temps à pied ; il prévient à moins de 50 m. Aucune position n’est enregistrée ni envoyée ; le guidage s’arrête à la fermeture de la fiche.
+- **Tracés réels des icônes** (`tracks-data.js`, `track-utils.js`) : chaque segment a un tracé calculé sur OpenStreetMap (itinéraire à pied depuis son départ, boucle ou aller-retour de la distance du segment, plusieurs orientations essayées, boucles qui se recoupent peu), simplifié à quelques mètres près. L’icône des cartes et de la fiche est la **forme exacte de ce tracé**, la distance affichée est sa longueur, le profil d’altitude et le dénivelé viennent d’un modèle numérique de terrain (Open-Meteo ; bruité, précision de l’ordre de la dizaine de mètres, dénivelé calculé avec un seuil de 3 m). Ce n’est pas le parcours « officiel » d’un segment : aucun n’a de parcours relevé. Fichier généré une fois pour toutes (aucune requête à l’exécution).
+- **Export GPX pour montre** (`gpx.js`, bloc « Tracé pour ma montre » d’une fiche) : *Départ seul* (hors ligne) produit un GPX avec le point de départ ; *Télécharger le tracé* (segments de la liste) livre le tracé ci-dessus avec ses altitudes, **hors ligne** ; pour un coin proposé par un coureur, *Générer le tracé* demande à un service de routage piéton public (`routing.openstreetmap.de`, données OpenStreetMap) une **boucle ou un aller-retour à pied de la distance du segment** depuis son départ (plusieurs orientations essayées, objectif ±10 %), puis propose le téléchargement ou le partage du `.gpx` (Garmin Connect, ou application compatible pour Apple Watch). Seules des coordonnées sont envoyées ; rien n’est enregistré. **Le tracé est indicatif** : les segments n’ont pas de parcours relevé, il ne reproduit donc pas forcément le chemin exact du segment, et doit être vérifié avant de courir. Hors ligne ou service indisponible : message clair, le départ seul reste disponible.
+- **Animations** (`motion.css`) : bandeau défilant, bandes de l’accueil, cartes en cascade, tracés qui se dessinent, marqueurs de carte qui apparaissent, compteurs qui montent dans le Carnet, ouverture des fenêtres, onglets. Elles sont coupées si l’appareil demande « réduire les animations ».
 
 ## 1. Ouvrir localement
 
@@ -60,7 +69,7 @@ Référence : [Transformer un site web en app dans Safari sur l’iPhone](https:
 
 ## Fonctions livrées
 
-- Explorer les 8 segments fictifs via la liste ou les points du schéma ; fiche détaillée, métriques et classement.
+- Explorer les 36 segments (Paris, proche couronne et Île-de-France) via la liste ou les points du schéma ; fiche détaillée, métriques et classement.
 - Recherche par nom/quartier, filtres facile/moyen/difficile, rayon de 2/5/10/20 km ou toute la région, tri proximité/longueur/fluidité.
 - Géolocalisation **réelle du navigateur, à la demande**, avec gestion du refus et du délai. Sans autorisation, point de référence de démonstration au centre de Paris. Les distances sont à vol d’oiseau vers le départ approximatif, pas des distances d’itinéraire.
 - Filtre favorisant les segments avec ≥ 70 % de voies piétonnes et ≥ 90 % de voies piétonnes ou dotées d’un trottoir ; tri par fluidité pour comparer les feux.
@@ -131,7 +140,11 @@ popcorn/
   styles.css              thème Arcade et adaptation mobile
   sport.css               thème Sport (noir et blanc, titres condensés)
   fonts/                  police Anton (licence OFL) embarquée en local
-  data.js                 segments et coureurs fictifs
+  data.js                 segments (8 fictifs + 28 lieux réels d’Île-de-France, valeurs indicatives) et coureurs fictifs
+  tracks-data.js          tracés réels encodés (généré)
+  track-utils.js          décodage, icône, profil d’altitude
+  gpx.js                  export GPX (boucle ou aller-retour piéton, routage OpenStreetMap)
+  motion.css              animations du style Sport et styles de la navigation
   core.js                 difficulté, fluidité, distances, validation
   app.js                  interactions et stockage local
   watch-adapters.js       contrat fournisseurs et import JSON local
